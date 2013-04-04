@@ -21,68 +21,74 @@
 </head>
 <body>
     <div class="container">
-        <div class="well">
-            <h2>Select Table</h2>
-            <label>Choose Table</label>
-            <select id="table-choose">
-                <option value="employees">Employees</option>
-                <option value="organisations">Organisations</option>
-            </select>
-            <label>Choose Columns</label>
-            <input type="text" id="table-columns" value="name,email" class="input-xlarge">
-            <label>Choose Page (Offset, Limit)</label>
-            <input type="text" id="table-limits" value="0,10">
-            <br>
-            <strong>All Columns : </strong><span id="table-columns-all"></span>
-        </div>
-        <div class="table-widget">
-            <span id="table-error" class="alert hide"></span>
-            <h2 id="table-title"></h2>
-            <table id="table-view" class="table table-bordered"></table>
+        <div id="table-widget">
+            <div class="well">
+                <h2>Select Table</h2>
+                <label>Choose Table</label>
+                <select class="table-choose">
+                    <option value="employees">Employees</option>
+                    <option value="organisations">Organisations</option>
+                </select>
+                <label>Choose Columns</label>
+                <input type="text" class="table-columns input-xlarge" value="name,email">
+                <label>Choose Page (Offset, Limit)</label>
+                <input type="text" class="table-limits" value="0,10">
+                <br>
+                <strong>All Columns : </strong><span class="table-columns-all">&nbsp;</span>
+            </div>
+            <div class="table-widget">
+                <span class="table-error" class="alert hide"></span>
+                <h2 class="table-title"></h2>
+                <table class="table-view table table-bordered"></table>
+            </div>
         </div>
     </div>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script type="text/javascript">
-        function updateTableContents(table) {
-            if (table == null || table === undefined) {
-                return false;
-            } else {
-                $('#table-title').text('Current Table : ' + table);
-                $.ajax({
-                    method: 'GET',
-                    url : 'config.php',
-                    contentType: 'json',
-                    data: {table : table, columns: $('#table-columns').val(), limits: $('#table-limits').val() },
-                    success: function(a, b, c) {
-                        $('#table-error').removeClass('hide').addClass('show').text('Successfully updated the view');
-                        $('#table-view').html(a.table);
-                        $('#table-columns-all').text(a.settings.allcols.join(','));
-                        dragtable.init();
-                    },
-                    failure: function(a, b, c) {
-                        $('#table-error').removeClass('hide').addClass('show').text('Problem communicating with server. Please try again later');
-                    }
-                })
+        var TableWidget = function(el) {
+            var element = el;
+            function updateTableContents(table) {
+                if (table == null || table === undefined) {
+                    return false;
+                } else {
+                    $(element + ' table-title').text('Current Table : ' + table);
+                    $.ajax({
+                        method: 'GET',
+                        url : 'config.php',
+                        contentType: 'json',
+                        data: {table : table, columns: $(element + ' ' + '.table-columns').val(), limits: $(element + ' ' + '.table-limits').val() },
+                        success: function(a, b, c) {
+                            $(element + ' ' + '.table-error').removeClass('hide').addClass('show').text('Successfully updated the view');
+                            $(element + ' ' + '.table-view').html(a.table);
+                            $(element + ' ' + '.table-columns-all').text(a.settings.allcols.join(','));
+                        },
+                        failure: function(a, b, c) {
+                            $(element + ' ' + '.table-error').removeClass('hide').addClass('show').text('Problem communicating with server. Please try again later');
+                        }
+                    })
+                }
             }
-        }
 
-        // change table contents
-        $('#table-choose').on('change', function() {
-            var status = updateTableContents($(this).val());
-        });
+            // change table contents
+            $(element + ' ' + '.table-choose').on('change', function() {
+                var status = updateTableContents($(this).val());
+            });
 
-        // when the table columns change
-        $('#table-columns').blur(function() {
-            updateTableContents($('#table-choose').val());
-        });
+            // when the table columns change
+            $(element + ' ' + '.table-columns').blur(function() {
+                updateTableContents($(element + ' .table-choose').val());
+            });
 
-        // when the table limits change
-        $('#table-limits').blur(function() {
-            updateTableContents($('#table-choose').val());
-        });
+            // when the table limits change
+            $(element + ' ' + '.table-limits').blur(function() {
+                updateTableContents($(element + ' .table-choose').val());
+            });
 
-        // on page-load render active table
-        updateTableContents($('#table-choose').val());
+            // on page-load render active table
+            updateTableContents($(element + ' .table-choose').val());
+        };
+        // create table widget with already created markup.
+        var t = new TableWidget('#table-widget');
     </script>
 </body>
 </html>
