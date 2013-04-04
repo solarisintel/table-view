@@ -21,26 +21,48 @@
 </head>
 <body>
     <div class="container">
-        <div id="table-widget">
-            <div class="well">
-                <h2>Select Table</h2>
-                <label>Choose Table</label>
-                <select class="table-choose">
-                    <option value="employees">Employees</option>
-                </select>
-                <label>Choose Columns</label>
-                <input type="text" class="table-columns input-xlarge" value="name,email">
-                <label>Choose Page (Offset, Limit)</label>
-                <input type="text" class="table-limits" value="0,10">
-                <br>
-                <strong>All Columns : </strong><span class="table-columns-all">&nbsp;</span>
-                <br>
-                <a href="config.php" class="btn btn-info table-export">Export to CSV</a>
+        <div class="row-fluid">
+            <div class="span2">
+                <h3>Help</h3>
+                <ul>
+                    <li><strong>Choose Table:</strong> Select the desired table from dropdown</li>
+                    <li><strong>Choose Page:</strong> Type the Record Offset (Min 0, Max 100) and Limit (Min 0, Max 100)</li>
+                    <li><strong>Choose Columns:</strong> Enter CSV List of all the columns that should be displayed in table below</li>
+                    <li><strong>Export to CSV:</strong> Export the result set to a CSV File</li>
+                </ul>
             </div>
-            <div class="table-widget">
-                <span class="table-error" class="alert hide"></span>
-                <h2 class="table-title"></h2>
-                <table class="table-view table table-bordered"></table>
+            <div class="span10">
+                <!-- markup for the table widget -->
+                <div id="table-widget">
+                    <div class="well">
+                        <h2>Select Table / Options</h2>
+                        <div class="row-fluid">
+                            <div class="span6">
+                                <label>Choose Table</label>
+                                <select class="table-choose">
+                                    <option value="employees">Employees</option>
+                                    <option value="organisations">Organisations</option>
+                                </select>
+                                <label>Choose Page (Offset, Limit)</label>
+                                <input type="text" class="table-limits" value="0,10">
+                                <br>
+                            </div>
+                            <div class="span6">
+                                <label>Choose Columns</label>
+                                <input type="text" class="table-columns input-xlarge" value="name,email">
+                                <br>
+                                <strong>All Columns : </strong><span class="table-columns-all">&nbsp;</span>
+                            </div>
+                        </div>
+                        <a href="config.php" class="btn btn-info table-export">Export to CSV</a>
+                    </div>
+                    <div class="table-widget">
+                        <span class="table-error" class="alert hide"></span>
+                        <h2 class="table-title"></h2>
+                        <table class="table-view table table-bordered"></table>
+                    </div>
+                </div>
+                <!-- markup for the table widget -->
             </div>
         </div>
     </div>
@@ -62,7 +84,7 @@
                         success: function(a, b, c) {
                             $(element + ' ' + '.table-error').removeClass('hide').addClass('show').text('Successfully updated the view');
                             $(element + ' ' + '.table-view').html(a.table);
-                            $(element + ' ' + '.table-columns-all').text(a.settings.allcols.join(','));
+                            $(element + ' ' + '.table-columns-all').text(a.settings.allcols.join(', '));
                         },
                         failure: function(a, b, c) {
                             $(element + ' ' + '.table-error').removeClass('hide').addClass('show').text('Problem communicating with server. Please try again later');
