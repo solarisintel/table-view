@@ -1,64 +1,4 @@
 <?php
-/*
-$tables = array(
-    'employees' => array(
-      'name',
-      'phone',
-      'email',
-      'addres',
-      'city',
-      'zip',
-      'state',
-      'country',
-      'date',
-      'custom',
-      'rname',
-      'ophone',
-      'altemail',
-      'altcity',
-      'altzip',
-    ),
-    'organisations' => array(
-        'id',
-        'name',
-        'title',
-        'address',
-        'city',
-        'country',
-        'status'
-    )
-);
-
-$usertables = array(
-    'employees' => array(
-        'id',
-        'name',
-        'title'
-    ),
-    'organisations' => array(
-        'id',
-        'name',
-    )
-);
-*/
-/*
-$records = array(
-    'employees' => array(
-        'id',
-        'name',
-        'title',
-        'designation',
-        'location',
-        'address',
-        'joined',
-        'office',
-        'phone',
-        'mobile',
-        'status',
-        'email'
-    )
-)
-*/
 
 class DB {
     public function __construct($file) {
@@ -83,49 +23,6 @@ class DB {
             $rows = $this->pdo->query("select $c from $table limit $limit offset $offset")->fetchAll(PDO::FETCH_ASSOC);
         } catch(Exception $e) {
         }
-        return $rows;
-    }
-}
-
-/*
-$db = new DB('sample.db');
-print_r($db->getTableColumns('employees'));exit;
-echo $db->countRows('employees').PHP_EOL;
-print_r($db->fetchRows(array('name', 'email'), 'employees', 5, 0));
-exit;
-*/
-class TableConfig {
-    var $map;
-    public function __construct($table) {
-        global $tables;
-        $this->map = $tables[$table];
-    }
-    public function getAllTableColumns($table) {
-        if (!empty($this->map)) {
-            return $this->map;
-        } else {
-            return array();
-        }
-    }
-    public function getUserTableColumns($table) {
-        if (!empty($this->usermap)) {
-            return $this->usermap;
-        } else {
-            return array();
-        }
-    }
-}
-
-class TableModel {
-    public function __construct($table) {
-        $this->table = new TableConfig($table);
-    }
-    public function getTableRecords($table, $columns, $page, $filter) {
-        $col    = implode(',', $columns);
-        $limit  = $this->limit;
-        $offset = $page * $limit;
-        $sql    = "select $columns from $table limit $limit";
-        $rows   = $this->dummyrows[$table];
         return $rows;
     }
 }
@@ -174,10 +71,21 @@ class TableView {
     }
 }
 
+function failResponse() {
+    // exit with failure
+    $rows  = array();
+    $settings = array();
+    header('Content-Type: application/json');
+    echo json_encode(array('failure' => true, 'table' => '', 'settings' => $settings));
+    exit;
+}
+
+/* input request processing starts here */
+
 if (!empty($_GET['table'])) {
     $table = $_GET['table'];
 } else {
-    $table = 'employees';
+    failResponse();
 }
 
 
@@ -192,8 +100,12 @@ if (!empty($_GET['columns'])) {
 
 if (!empty($_GET['limits'])) {
     $parts = explode(',', $_GET['limits']);
-    $offset= $parts[0];
-    $limit = $parts[1];
+    if (count($parts) == 2) {
+        $offset= intval($parts[0]);
+        $limit = intval($parts[1]);
+    } else {
+        failResponse();
+    }
 } else {
     $limit = 10;
     $offset= 0;
