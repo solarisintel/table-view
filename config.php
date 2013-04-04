@@ -1,6 +1,19 @@
 <?php
 
-class DB {
+/* base class */
+abstract class DB {
+    public function __construct() {
+    }
+    public function getTableColumns($table) {
+    }
+    public function countRows($table) {
+    }
+    public function fetchRows($cols, $table, $limit, $offset) {
+    }
+}
+
+/* specific to sqlite */
+class SqliteDB extends DB {
     public function __construct($file) {
         $this->pdo = new PDO("sqlite:$file");
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -27,6 +40,7 @@ class DB {
     }
 }
 
+/* table renderer */
 class TableView {
     public function __construct($settings) {
         $this->settings = $settings;
@@ -88,14 +102,14 @@ if (!empty($_GET['table'])) {
     failResponse();
 }
 
-
-$db = new DB('sample.db');
+$db = new SqliteDB('sample.db');
 $count = $db->countRows($table);
 
 if (!empty($_GET['columns'])) {
     $columns = explode(',', $_GET['columns']);
 } else {
-    $columns = array('name', 'email');
+    // do not assume anything
+    $columns = array();
 }
 
 if (!empty($_GET['limits'])) {
@@ -126,4 +140,3 @@ $view = new TableView($settings);
 header('Content-Type: application/json');
 echo json_encode(array('table' => $view->render($rows), 'settings' => $settings));
 exit;
-
