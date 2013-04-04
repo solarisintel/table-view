@@ -29,11 +29,15 @@ class SqliteDB extends DB {
         $row = $this->pdo->query("select count(*) from $table")->fetch(PDO::FETCH_ASSOC);
         return $row['count(*)'];
     }
-    public function fetchRows($cols, $table, $limit, $offset) {
+    public function fetchRows($cols, $table, $limit, $offset, $expression='') {
         $rows = array();
         try {
             $c    = implode(', ', $cols);
-            $rows = $this->pdo->query("select $c from $table limit $limit offset $offset")->fetchAll(PDO::FETCH_ASSOC);
+            $expr = '';
+            if (strlen($expression) > 0 and preg_match('/([<>=])|(is)|(not)/', $expression)) {
+                $expr = 'where '.$expression; // FIXME: sql-injection friendly. So, nothing can be done until query builder is created.
+            }
+            $rows = $this->pdo->query("select $c from $table $expr limit $limit offset $offset")->fetchAll(PDO::FETCH_ASSOC);
         } catch(Exception $e) {
         }
         return $rows;
@@ -48,7 +52,7 @@ class TableView {
     public function renderHeadings() {
         $head  = '<thead>';
         foreach ($this->settings['columns'] as $column) {
-            $head .= '<th>'.ucfirst($column).'</th>';
+            $head .= '<th>'.$column.'</th>';
         }
         $head .= '</thead>';
         return $head;
@@ -70,16 +74,16 @@ class TableView {
         }
         return $body;
     }
-    public function renderFooter() {
+    public function renderFooter($cur=0) {
         $limit = $this->settings['limit'];
         $offset= $this->settings['offset'];
         $total = $this->settings['total'];
         $cols  = count($this->settings['columns']);
-        return "<tfoot><tr><th colspan='$cols'>Total Rows : $total, Limit : $limit, Offset : $offset</th></tr></tfoot>";
+        return "<tfoot><tr><th colspan='$cols'>Rows : $cur/$total [Limit : $limit, Offset : $offset]</th></tr></tfoot>";
     }
     public function render(&$rows) {
         $table = $this->renderHeadings();
-        $table.= $this->renderFooter();
+        $table.= $this->renderFooter(count($rows));
         $table.= $this->renderBody($rows);
         return $table;
     }
@@ -131,27 +135,46 @@ function failResponse() {
 
 /* input request processing starts here */
 
-if (!empty($_GET['table'])) {
-    $table = $_GET['table'];
+if (!empty($_GET['type'])) {
+    $type = trim(preg_replace('/W/', '', $_GET['type'])); // safety net.
 } else {
-    failResponse();
+    die('no type');
+}
+
+if (!empty($_GET['table'])) {
+    $table = trim(preg_replace('/W/', '', $_GET['table'])); // safety net.
+} else {
+    die('no table');
+}
+
+if (!empty($_GET['expression'])) {
+    $expression = $_GET['expression']; // no safety here. nothing can be done FIXME
+} else {
+    $expression = ''; // its ok to be empty.
 }
 
 $db = new SqliteDB('sample.db');
 $count = $db->countRows($table);
 
 if (!empty($_GET['columns'])) {
-    $columns = explode(',', $_GET['columns']);
+    $incolumns = explode(',', $_GET['columns']);
+    $columns   = array();
+    foreach ($incolumns as $col) {
+        $c = trim(preg_replace('/\W/', '', $col)); // safety net
+        if (strlen($c) > 0) {
+            $columns[] = $c;
+        }
+    }
 } else {
     // do not assume anything
     $columns = array();
 }
 
 if (!empty($_GET['limits'])) {
-    $parts = explode(',', $_GET['limits']);
+    $parts = explode(',', trim($_GET['limits']));
     if (count($parts) == 2) {
-        $offset= intval($parts[0]);
-        $limit = intval($parts[1]);
+        $offset= intval(trim($parts[0])); // safety net
+        $limit = intval(trim($parts[1])); // safety net
     } else {
         failResponse();
     }
@@ -161,16 +184,16 @@ if (!empty($_GET['limits'])) {
 }
 
 $settings = array(
-    'allcols' => $db->getTableColumns($table),
-    'table'   => $table,
-    'columns' => $columns,
-    'total'   => $count,
-    'limit'   => $limit,
-    'offset'  => $offset
+    'allcols'    => $db->getTableColumns($table),
+    'table'      => $table,
+    'columns'    => $columns,
+    'total'      => $count,
+    'limit'      => $limit,
+    'offset'     => $offset,
+    'expression' => $expression,
 );
 
-$rows  = $db->fetchRows($settings['columns'], $settings['table'], $settings['limit'], $settings['offset']);
-$type  = $_GET['type'];
+$rows  = $db->fetchRows($settings['columns'], $settings['table'], $settings['limit'], $settings['offset'], $settings['expression']);
 
 if ($type === 'html') {
     header('Content-Type: application/json');

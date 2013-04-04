@@ -28,6 +28,7 @@
                     <li><strong>Choose Table:</strong> Select the desired table from dropdown</li>
                     <li><strong>Choose Page:</strong> Type the Record Offset (Min 0, Max 100) and Limit (Min 0, Max 100)</li>
                     <li><strong>Choose Columns:</strong> Enter CSV List of all the columns that should be displayed in table below</li>
+                    <li><strong>Expression:</strong> Any valid SQL filter clause without the <strong>where</strong> keyword.<pre>length(email) > 40</pre></li>
                     <li><strong>Export to CSV:</strong> Export the result set to a CSV File</li>
                 </ul>
             </div>
@@ -36,6 +37,8 @@
                 <div id="table-widget">
                     <div class="well">
                         <h2>Select Table / Options</h2>
+                        <strong>All Columns : </strong><span class="table-columns-all">&nbsp;</span>
+                        <hr>
                         <div class="row-fluid">
                             <div class="span6">
                                 <label>Choose Table</label>
@@ -45,13 +48,12 @@
                                 </select>
                                 <label>Choose Page (Offset, Limit)</label>
                                 <input type="text" class="table-limits" value="0,10">
-                                <br>
                             </div>
                             <div class="span6">
                                 <label>Choose Columns</label>
                                 <input type="text" class="table-columns input-xlarge" value="name,email">
-                                <br>
-                                <strong>All Columns : </strong><span class="table-columns-all">&nbsp;</span>
+                                <label>Expression</label>
+                                <textarea class="table-expr input-xlarge"></textarea>
                             </div>
                         </div>
                         <a href="config.php" class="btn btn-info table-export">Export to CSV</a>
@@ -75,7 +77,13 @@
                     return false;
                 } else {
                     $(element + ' table-title').text('Current Table : ' + table);
-                    var params = {type : 'html', table : table, columns: $(element + ' ' + '.table-columns').val(), limits: $(element + ' ' + '.table-limits').val() };
+                    var params = {
+                        type : 'html',
+                        table : table,
+                        columns: $(element + ' .table-columns').val(),
+                        expression: $(element + ' .table-expr').val(),
+                        limits: $(element + ' .table-limits').val()
+                    };
                     $.ajax({
                         method: 'GET',
                         url : 'config.php',
@@ -108,11 +116,22 @@
                 updateTableContents($(element + ' .table-choose').val());
             });
 
-            // when the table limits change
+            // when the table expression is clicked
+            $(element + ' ' + '.table-expr').blur(function() {
+                updateTableContents($(element + ' .table-choose').val());
+            });
+
+            // when the table export button clicked
             $(element + ' ' + '.table-export').on('click', function(e) {
                 e.preventDefault();
                 var url = $(this).attr('href');
-                var params = {type : 'csv', table : $(element +' .table-choose').val(), columns: $(element + ' ' + '.table-columns').val(), limits: $(element + ' ' + '.table-limits').val() };
+                var params = {
+                    type : 'csv',
+                    table : $(element + ' .table-choose').val(),
+                    expression: $(element + ' .table-expr').val(),
+                    columns: $(element + ' .table-columns').val(),
+                    limits: $(element + ' .table-limits').val()
+                };
                 var newurl = url + '?' + $.param(params);
                 window.location.href = newurl;
             });
