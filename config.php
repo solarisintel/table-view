@@ -53,7 +53,7 @@ class TableView {
         $head .= '</thead>';
         return $head;
     }
-    public function renderBody($rows) {
+    public function renderBody(&$rows) {
         if (!empty($rows)) {
             $body  = '<tbody>';
             foreach ($rows as $row) {
@@ -83,6 +83,41 @@ class TableView {
         $table.= $this->renderBody($rows);
         return $table;
     }
+}
+
+class ExportView {
+    public function __construct($settings) {
+        $this->settings = $settings;
+    }
+    public function renderHeadings(&$out) {
+        fputcsv($out, $this->settings['columns']);
+    }
+    public function renderBody(&$rows, &$out) {
+        $newrows = array();
+        if (!empty($rows)) {
+            foreach ($rows as $idx => $row) {
+                // This is to preserve the order.
+                foreach ($this->settings['columns'] as $column) {
+                    $newrows[$idx][] = $row[$column];
+                }
+            }
+            foreach($newrows as $row) {
+                fputcsv($out, $row);
+            }
+        }
+    }
+    public function render(&$rows, $filename) {
+        header("Content-type: application/octet-stream");
+        header("Content-Disposition: attachment; filename=$filename");
+        header("Pragma: no-cache");
+        header("Expires: 0");
+
+        $out = fopen('php://output', 'w');
+        $this->renderHeadings($out);
+        $this->renderBody($rows, $out);
+        fclose($out);
+    }
+
 }
 
 function failResponse() {
@@ -135,8 +170,19 @@ $settings = array(
 );
 
 $rows  = $db->fetchRows($settings['columns'], $settings['table'], $settings['limit'], $settings['offset']);
+$type  = $_GET['type'];
 
-$view = new TableView($settings);
-header('Content-Type: application/json');
-echo json_encode(array('table' => $view->render($rows), 'settings' => $settings));
-exit;
+if ($type === 'html') {
+    header('Content-Type: application/json');
+    $view = new TableView($settings);
+    echo json_encode(array('table' => $view->render($rows), 'settings' => $settings));
+    exit;
+} else if ($type === 'csv') {
+    header('Content-Type: application/json');
+    $view = new ExportView($settings);
+    $view->render($rows, "attachment.csv");
+    exit;
+} else {
+    echo 'Invalid Request';
+    exit;
+}

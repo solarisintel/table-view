@@ -34,6 +34,8 @@
                 <input type="text" class="table-limits" value="0,10">
                 <br>
                 <strong>All Columns : </strong><span class="table-columns-all">&nbsp;</span>
+                <br>
+                <a href="config.php" class="btn btn-info table-export">Export to CSV</a>
             </div>
             <div class="table-widget">
                 <span class="table-error" class="alert hide"></span>
@@ -51,11 +53,12 @@
                     return false;
                 } else {
                     $(element + ' table-title').text('Current Table : ' + table);
+                    var params = {type : 'html', table : table, columns: $(element + ' ' + '.table-columns').val(), limits: $(element + ' ' + '.table-limits').val() };
                     $.ajax({
                         method: 'GET',
                         url : 'config.php',
                         contentType: 'json',
-                        data: {table : table, columns: $(element + ' ' + '.table-columns').val(), limits: $(element + ' ' + '.table-limits').val() },
+                        data: params,
                         success: function(a, b, c) {
                             $(element + ' ' + '.table-error').removeClass('hide').addClass('show').text('Successfully updated the view');
                             $(element + ' ' + '.table-view').html(a.table);
@@ -81,6 +84,15 @@
             // when the table limits change
             $(element + ' ' + '.table-limits').blur(function() {
                 updateTableContents($(element + ' .table-choose').val());
+            });
+
+            // when the table limits change
+            $(element + ' ' + '.table-export').on('click', function(e) {
+                e.preventDefault();
+                var url = $(this).attr('href');
+                var params = {type : 'csv', table : $(element +' .table-choose').val(), columns: $(element + ' ' + '.table-columns').val(), limits: $(element + ' ' + '.table-limits').val() };
+                var newurl = url + '?' + $.param(params);
+                window.location.href = newurl;
             });
 
             // on page-load render active table
