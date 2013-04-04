@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>HTML Table View</title>
+    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
+    <style type="text/css">
+        body {
+            background-color: #4a1662;
+        }
+        thead th {
+            background-color: #777;
+            color: white;
+        }
+        .container {
+            margin-top: 2ex;
+            background-color: snow;
+            padding: 1ex;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="well">
+            <h2>Select Table</h2>
+            <label>Choose Table</label>
+            <select id="table-choose">
+                <option value="employees">Employees</option>
+                <option value="organisations">Organisations</option>
+            </select>
+            <label>Choose Columns</label>
+            <input type="text" id="table-columns" value="name,email" class="input-xlarge">
+            <label>Choose Page (Offset, Limit)</label>
+            <input type="text" id="table-limits" value="0,10">
+            <br>
+            <strong>All Columns : </strong><span id="table-columns-all"></span>
+        </div>
+        <div class="table-widget">
+            <span id="table-error" class="alert hide"></span>
+            <h2 id="table-title"></h2>
+            <table id="table-view" class="table table-bordered"></table>
+        </div>
+    </div>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        function updateTableContents(table) {
+            if (table == null || table === undefined) {
+                return false;
+            } else {
+                $('#table-title').text('Current Table : ' + table);
+                $.ajax({
+                    method: 'GET',
+                    url : 'config.php',
+                    contentType: 'json',
+                    data: {table : table, columns: $('#table-columns').val(), limits: $('#table-limits').val() },
+                    success: function(a, b, c) {
+                        $('#table-error').removeClass('hide').addClass('show').text('Successfully updated the view');
+                        $('#table-view').html(a.table);
+                        $('#table-columns-all').text(a.settings.allcols.join(','));
+                        dragtable.init();
+                    },
+                    failure: function(a, b, c) {
+                        $('#table-error').removeClass('hide').addClass('show').text('Problem communicating with server. Please try again later');
+                    }
+                })
+            }
+        }
+
+        // change table contents
+        $('#table-choose').on('change', function() {
+            var status = updateTableContents($(this).val());
+        });
+
+        // when the table columns change
+        $('#table-columns').blur(function() {
+            updateTableContents($('#table-choose').val());
+        });
+
+        // when the table limits change
+        $('#table-limits').blur(function() {
+            updateTableContents($('#table-choose').val());
+        });
+
+        // on page-load render active table
+        updateTableContents($('#table-choose').val());
+    </script>
+</body>
+</html>
