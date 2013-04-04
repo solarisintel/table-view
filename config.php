@@ -1,35 +1,47 @@
 <?php
 
 /* base class */
-abstract class DB {
-    public function __construct() {
+abstract class DB
+{
+    public function __construct()
+    {
     }
-    public function getTableColumns($table) {
+    public function getTableColumns($table)
+    {
     }
-    public function countRows($table) {
+    public function countRows($table)
+    {
     }
-    public function fetchRows($cols, $table, $limit, $offset) {
+    public function fetchRows($cols, $table, $limit, $offset)
+    {
     }
 }
 
 /* specific to sqlite */
-class SqliteDB extends DB {
-    public function __construct($file) {
+class SqliteDB extends DB
+{
+    public function __construct($file)
+    {
         $this->pdo = new PDO("sqlite:$file");
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
-    public function getTableColumns($table) {
+    public function getTableColumns($table)
+    {
         $cols = array();
         foreach ($this->pdo->query("PRAGMA table_info($table)")->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $cols[] = $row['name'];
         }
+
         return $cols;
     }
-    public function countRows($table) {
+    public function countRows($table)
+    {
         $row = $this->pdo->query("select count(*) from $table")->fetch(PDO::FETCH_ASSOC);
+
         return $row['count(*)'];
     }
-    public function fetchRows($cols, $table, $limit, $offset, $expression='') {
+    public function fetchRows($cols, $table, $limit, $offset, $expression='')
+    {
         $rows = array();
         try {
             $c    = implode(', ', $cols);
@@ -38,26 +50,32 @@ class SqliteDB extends DB {
                 $expr = 'where '.$expression; // FIXME: sql-injection friendly. So, nothing can be done until query builder is created.
             }
             $rows = $this->pdo->query("select $c from $table $expr limit $limit offset $offset")->fetchAll(PDO::FETCH_ASSOC);
-        } catch(Exception $e) {
+        } catch (Exception $e) {
         }
+
         return $rows;
     }
 }
 
 /* table renderer */
-class TableView {
-    public function __construct($settings) {
+class TableView
+{
+    public function __construct($settings)
+    {
         $this->settings = $settings;
     }
-    public function renderHeadings() {
+    public function renderHeadings()
+    {
         $head  = '<thead>';
         foreach ($this->settings['columns'] as $column) {
             $head .= '<th>'.$column.'</th>';
         }
         $head .= '</thead>';
+
         return $head;
     }
-    public function renderBody(&$rows) {
+    public function renderBody(&$rows)
+    {
         if (!empty($rows)) {
             $body  = '<tbody>';
             foreach ($rows as $row) {
@@ -72,31 +90,40 @@ class TableView {
         } else {
             $body = '<tbody><tr><td>Error Fetching Records.</td></tr></tbody>';
         }
+
         return $body;
     }
-    public function renderFooter($cur=0) {
+    public function renderFooter($cur=0)
+    {
         $limit = $this->settings['limit'];
         $offset= $this->settings['offset'];
         $total = $this->settings['total'];
         $cols  = count($this->settings['columns']);
+
         return "<tfoot><tr><th colspan='$cols'>Rows : $cur/$total [Limit : $limit, Offset : $offset]</th></tr></tfoot>";
     }
-    public function render(&$rows) {
+    public function render(&$rows)
+    {
         $table = $this->renderHeadings();
         $table.= $this->renderFooter(count($rows));
         $table.= $this->renderBody($rows);
+
         return $table;
     }
 }
 
-class ExportView {
-    public function __construct($settings) {
+class ExportView
+{
+    public function __construct($settings)
+    {
         $this->settings = $settings;
     }
-    public function renderHeadings(&$out) {
+    public function renderHeadings(&$out)
+    {
         fputcsv($out, $this->settings['columns']);
     }
-    public function renderBody(&$rows, &$out) {
+    public function renderBody(&$rows, &$out)
+    {
         $newrows = array();
         if (!empty($rows)) {
             foreach ($rows as $idx => $row) {
@@ -105,12 +132,13 @@ class ExportView {
                     $newrows[$idx][] = $row[$column];
                 }
             }
-            foreach($newrows as $row) {
+            foreach ($newrows as $row) {
                 fputcsv($out, $row);
             }
         }
     }
-    public function render(&$rows, $filename) {
+    public function render(&$rows, $filename)
+    {
         header("Content-type: application/octet-stream");
         header("Content-Disposition: attachment; filename=$filename");
         header("Pragma: no-cache");
@@ -124,7 +152,8 @@ class ExportView {
 
 }
 
-function failResponse() {
+function failResponse()
+{
     // exit with failure
     $rows  = array();
     $settings = array();
@@ -200,7 +229,7 @@ if ($type === 'html') {
     $view = new TableView($settings);
     echo json_encode(array('table' => $view->render($rows), 'settings' => $settings));
     exit;
-} else if ($type === 'csv') {
+} elseif ($type === 'csv') {
     header('Content-Type: application/json');
     $view = new ExportView($settings);
     $view->render($rows, "attachment.csv");
