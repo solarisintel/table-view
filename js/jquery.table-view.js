@@ -54,10 +54,12 @@ var TableView = function(el, oel, opt) {
                     placement : 'bottom',
                     content : html //'<ul class="table-sort-cols sortable"></ul>'
                 });
-                columnsInited = true;
             //}
             // $(element + ' .table-popover').popover('hide');
-            $(element + ' .table-popover').data('content', html);
+            //$(element + ' .table-popover').data('content', html);
+            if (columnsInited === true) {
+                $(element + ' .table-popover').popover('toggle');
+            }
             columnsInited = true;
     }
 
