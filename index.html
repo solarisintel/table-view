@@ -53,8 +53,15 @@
                                     <option value="employees">Employees</option>
                                     <option value="organisations">Organisations</option>
                                 </select>
-                                <label>Choose Page (Offset, Limit)</label>
+                                <label>Page</label>
+                                <select class="table-limit-page input-small">
+                                </select>
+                                <label>Limit</label>
+                                <select class="table-limit-size input-mini">
+                                </select>
+                                <!--
                                 <input type="text" class="table-limits" value="0,10">
+                                -->
                             </div>
                             <div class="span4">
                                 <label>Choose Columns</label>
@@ -85,7 +92,22 @@
                         <script src="jquery.sortable.js"></script>
     <script type="text/javascript">
         // create table widget with already created markup.
-        var t = new TableView('#table-widget', { datasrc : 'config.php', table : 'employees', columns : ['name', 'phone', 'date', 'rname']});
+        var t = new TableView(
+            '#table-widget',
+            { 
+                datasrc : 'config.php',
+                table : 'employees',
+                columns : ['name', 'phone', 'date', 'rname'],
+                pagesizes : {
+                    "5"   : "5",
+                    "10"  : "10",
+                    "25"  : "25",
+                    "50"  : "50",
+                    "100" : "100"
+                },
+                defaultsize : 25
+            }
+        );
     </script>
 </body>
 </html>
