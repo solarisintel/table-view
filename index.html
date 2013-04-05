@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>HTML Table View</title>
     <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
+    <link href="css/bootstrap-modal.css" rel="stylesheet">
     <style type="text/css">
         body {
             background-color: #4a1662;
@@ -41,44 +42,52 @@
             </div>
             <div class="span10">
                 <!-- markup for the table widget -->
-                <div id="table-widget">
-                    <div class="well">
-                        <h2>Select Table / Options</h2>
-                        <strong>All Columns : </strong><span class="table-columns-all">&nbsp;</span>
-                        <hr>
-                        <div class="row-fluid">
-                            <div class="span4">
-                                <label>Choose Table</label>
-                                <select class="table-choose">
-                                    <option value="employees">Employees</option>
-                                    <option value="organisations">Organisations</option>
-                                </select>
-                                <label>Page</label>
-                                <select class="table-limit-page input-small">
-                                </select>
-                                <label>Limit</label>
-                                <select class="table-limit-size input-mini">
-                                </select>
-                                <!--
-                                <input type="text" class="table-limits" value="0,10">
-                                -->
-                            </div>
-                            <div class="span4">
-                                <label>Choose Columns</label>
-                                <input type="text" class="table-columns input-xlarge" value="name,email">
-                                <label>Expression</label>
-                                <textarea class="table-expr input-xlarge"></textarea>
-                            </div>
-                            <div class="span4">
-                                <label>Poor man's drag/drop</label>
-                                <ul class="table-sort-cols sortable">
-                                </ul>
+                <div id="table-container">
+                    <a href="#table-widget-settings" data-toggle="modal" class="btn pull-right"><i class="icon icon-cog"></i> Options</a>
+                    <div id="table-widget-settings" class="modal container hide fade">
+                        <div class="modal-header">
+                            <h2>Select Table / Options</h2>
+                        </div>
+                        <div class="modal-body">
+                            <strong>All Columns : </strong><span class="table-columns-all">&nbsp;</span>
+                            <hr>
+                            <div class="row-fluid">
+                                <div class="span4">
+                                    <label>Choose Table</label>
+                                    <select class="table-choose">
+                                        <option value="employees">Employees</option>
+                                        <option value="organisations">Organisations</option>
+                                    </select>
+                                    <label>Page</label>
+                                    <select class="table-limit-page input-small">
+                                    </select>
+                                    <label>Limit</label>
+                                    <select class="table-limit-size input-mini">
+                                    </select>
+                                    <!--
+                                    <input type="text" class="table-limits" value="0,10">
+                                    -->
+                                </div>
+                                <div class="span4">
+                                    <label>Choose Columns</label>
+                                    <input type="text" class="table-columns input-xlarge">
+                                    <label>Expression</label>
+                                    <textarea class="table-expr input-xlarge"></textarea>
+                                </div>
+                                <div class="span4">
+                                    <label>Poor man's drag/drop</label>
+                                    <ul class="table-sort-cols sortable">
+                                    </ul>
+                                </div>
                             </div>
                         </div>
-                        <a href="config.php" class="btn btn-info table-export">Export to CSV</a>
+                        <div class="modal-footer">
+                            <a href="config.php" class="btn btn-info table-export">Download CSV</a>
+                            <button class="btn btn-danger" data-dismiss="modal">Close</button>
+                        </div>
                     </div>
                     <div class="table-widget">
-                        <span class="table-error" class="alert hide"></span>
+                        <span class="table-error alert alert-info hide"></span>
                         <h2 class="table-title"></h2>
                         <table class="table-view table table-bordered"></table>
                     </div>
@@ -88,12 +97,16 @@
         </div>
     </div>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-    <script src="jquery.table-view.js"></script>
-                        <script src="jquery.sortable.js"></script>
+    <script src="js/jquery.table-view.js"></script>
+    <script src="js/jquery.sortable.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/bootstrap-modalmanager.js"></script>
+    <script src="js/bootstrap-modal.js"></script>
     <script type="text/javascript">
         // create table widget with already created markup.
         var t = new TableView(
-            '#table-widget',
+            '#table-widget-settings',
+            '#table-container',
             { 
                 datasrc : 'config.php',
                 table : 'employees',

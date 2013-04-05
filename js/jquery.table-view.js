@@ -1,5 +1,6 @@
-var TableView = function(el, opt) {
-    var element = el;
+var TableView = function(el, oel, opt) {
+    var element  = el;
+    var oelement = oel;
     var options = opt || { datasrc : 'config.php' };
     var tablestate;
 
@@ -23,7 +24,6 @@ var TableView = function(el, opt) {
         for(var c in cols) {
             html += '<li>' + cols[c] +'</li>';
         }
-        console.log(html);
         $(element +' .table-sort-cols').html(html);
         $(element + ' .sortable').sortable().bind('sortupdate', function(e, data) {
             try {
@@ -60,7 +60,7 @@ var TableView = function(el, opt) {
         }
         var limit = parseInt($(element + ' .table-limit-size').val(), 10);
         var page  = parseInt($(element + ' .table-limit-page').val(), 10);
-        var offset = (page - 1)* tablestate.limit;
+        var offset = (page - 1) * tablestate.limit;
         //return $(element + ' .table-limits').val();
         var ret = [offset, limit].join(',');
         console.log(ret);
@@ -79,6 +79,7 @@ var TableView = function(el, opt) {
                 expression: $(element + ' .table-expr').val(),
                 limits: getTableLimits(element)
             };
+            console.log(params);
             $.ajax({
                 method: 'GET',
                 url : options.datasrc ,
@@ -87,7 +88,7 @@ var TableView = function(el, opt) {
                 success: function(a, b, c) {
                     tablestate = a.settings;
                     $(element + ' ' + '.table-error').removeClass('hide').addClass('show').text('Successfully updated the view');
-                    $(element + ' ' + '.table-view').html(a.table);
+                    $(oelement + ' ' + '.table-view').html(a.table);
                     $(element + ' ' + '.table-columns-all').text(a.settings.allcols.join(', '));
                     handleSorting(element);
                     generatePages();
@@ -111,14 +112,18 @@ var TableView = function(el, opt) {
 
     // when the table limits change
     $(element + ' ' + '.table-limit-page').change(function() {
+        console.log('page changed');
         updateTableContents($(element + ' .table-choose').val());
     });
+
     $(element + ' ' + '.table-limit-size').change(function() {
+        console.log('size changed');
         updateTableContents($(element + ' .table-choose').val());
     });
 
     // when the table expression is clicked
     $(element + ' ' + '.table-expr').blur(function() {
+        console.log('expression changed');
         updateTableContents($(element + ' .table-choose').val());
     });
 
@@ -140,8 +145,10 @@ var TableView = function(el, opt) {
     // use the settings to update the ui elements
     // 1. set the default table
     $(element +' .table-choose').val(options.table);
+
     // 2. set the default columns
     $(element +' .table-columns').attr('value', options.columns.join(','));
+
     // 3. create select options for limit size
     $(element + ' .table-limit-size').html(renderSelect(options.pagesizes, options.defaultsize));
 
