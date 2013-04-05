@@ -40,7 +40,11 @@ class SqliteDB extends DB
         if (strlen($expression) > 0) {
             $e   = 'where '.$this->cleanupExpression($expression);
         }
-        $row = $this->pdo->query("select count(*) from $table $e")->fetch(PDO::FETCH_ASSOC);
+        $sql = "select count(*) from $table $e";
+
+        error_log($sql);
+
+        $row = $this->pdo->query($sql)->fetch(PDO::FETCH_ASSOC);
 
         return $row['count(*)'];
     }
@@ -54,7 +58,7 @@ class SqliteDB extends DB
         try {
             $c    = implode(', ', $cols);
             $expr = '';
-            if (strlen($expression) > 0 and preg_match('/([<>=])|(is)|(not)/i', $expression)) {
+            if (strlen($expression) > 0) {
                 $e    = $this->cleanupExpression($expression);
                 $expr = 'where '.$e; // FIXME: sql-injection friendly. So, nothing can be done until query builder is created.
             }
@@ -233,7 +237,7 @@ $settings = array(
     'offset'     => $offset,
     'expression' => $expression,
     //'keywords'   => array('AND', 'OR', 'EQ', 'NE', 'LT', 'GT'),
-    'keywords'   => array('AND', 'OR', 'NOT', 'NULL', 'NOTNULL', 'BETWEEN', '=', '!=', '<', '>'),
+    'keywords'   => array('=', '!=', '<', '>', '>=', '<=', 'IS NULL', 'IS NOT NULL', 'LIKE', 'NOT LIKE'),
 );
 
 $rows  = $db->fetchRows($settings['columns'], $settings['table'], $settings['limit'], $settings['offset'], $settings['expression']);
