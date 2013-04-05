@@ -38,9 +38,9 @@ class SqliteDB extends DB
     {
         $e = '';
         if (strlen($expression) > 0) {
-            $e   = $this->cleanupExpression($expression);
+            $e   = 'where '.$this->cleanupExpression($expression);
         }
-        $row = $this->pdo->query("select count(*) from $table where $e")->fetch(PDO::FETCH_ASSOC);
+        $row = $this->pdo->query("select count(*) from $table $e")->fetch(PDO::FETCH_ASSOC);
 
         return $row['count(*)'];
     }

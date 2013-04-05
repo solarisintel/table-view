@@ -36,6 +36,7 @@ var KEY = {
     }
 
     function initPopover(element) {
+        /*
         var html = '<div class="controls table-sort-cols sortable">';
         var q    = tablestate.allcols;
         for (var idx in q) {
@@ -49,17 +50,25 @@ var KEY = {
             placement : 'bottom',
             content : html //'<ul class="table-sort-cols sortable"></ul>'
         });
+       */
     }
 
     function handleSorting(element) {
-        var html = '';
+        $(element + ' .sortable').sortable('destroy');
+        var html = '<ul class="table-sort-cols sortable">';
         var co   = $(element + ' .table-columns').val();
         var cols = co.split(/,/);
         for(var c in cols) {
             html += '<li>' + cols[c] +'</li>';
         }
-        html += '';
-        $(element + ' .sortable').sortable('destroy');
+        html += '</ul>';
+        $(element + ' .table-popover').popover({
+            html : true,
+            trigger : 'click',
+            container : element,
+            placement : 'bottom',
+            content : html //'<ul class="table-sort-cols sortable"></ul>'
+        });
         $(element + ' .table-sort-cols').html(html);
         $(element + ' .sortable').sortable().bind('sortupdate', function(e, data) {
             try {
@@ -125,7 +134,8 @@ var KEY = {
                     tablestate = a.settings;
                     $(element + ' ' + '.table-error').removeClass('hide').addClass('show').text('Successfully updated the view');
                     $(oelement + ' ' + '.table-view').html(a.table);
-                    // $(element + ' ' + '.table-columns-all').text(a.settings.allcols.join(', '));
+                    $(element + ' ' + '.table-columns-all').text(a.settings.allcols.join(', '));
+                    $(element + ' ' + '.table-keywords-all').text(a.settings.keywords.join(', '));
                     initPopover(element);
                     handleSorting(element);
                     generatePages();
