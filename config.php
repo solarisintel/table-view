@@ -34,9 +34,13 @@ class SqliteDB extends DB
 
         return $cols;
     }
-    public function countRows($table)
+    public function countRows($table, $expression)
     {
-        $row = $this->pdo->query("select count(*) from $table")->fetch(PDO::FETCH_ASSOC);
+        $e = '';
+        if (strlen($expression) > 0) {
+            $e   = $this->cleanupExpression($expression);
+        }
+        $row = $this->pdo->query("select count(*) from $table where $e")->fetch(PDO::FETCH_ASSOC);
 
         return $row['count(*)'];
     }
@@ -190,7 +194,6 @@ if (!empty($_GET['expression'])) {
 }
 
 $db = new SqliteDB('sample.db');
-$count = $db->countRows($table);
 
 if (!empty($_GET['columns'])) {
     $incolumns = explode(',', $_GET['columns']);
@@ -218,6 +221,8 @@ if (!empty($_GET['limits'])) {
     $limit = 10;
     $offset= 0;
 }
+
+$count = $db->countRows($table, $expression);
 
 $settings = array(
     'allcols'    => $db->getTableColumns($table),

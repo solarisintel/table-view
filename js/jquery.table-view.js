@@ -65,10 +65,10 @@ var KEY = {
             try {
                 e.preventDefault();
                 e.stopPropagation();
-                console.log(e);
+                // console.log(e);
                 var neworder = [];
                 $(this).find('li').each(function( index ) {
-                    console.log( index + ": " + $(this).text() );
+                    // console.log( index + ": " + $(this).text() );
                     neworder.push($(this).text());
                 });
                 $(element + ' .table-columns').val(neworder.join(','));
@@ -99,7 +99,7 @@ var KEY = {
         var offset = (page - 1) * tablestate.limit;
         //return $(element + ' .table-limits').val();
         var ret = [offset, limit].join(',');
-        console.log(ret);
+        // console.log(ret);
         return ret;
     }
 
@@ -157,18 +157,18 @@ var KEY = {
 
     // when the table limits change
     $(element + ' ' + '.table-limit-page').change(function() {
-        console.log('page changed');
+        // console.log('page changed');
         updateTableContents($(element + ' .table-choose').val());
     });
 
     $(element + ' ' + '.table-limit-size').change(function() {
-        console.log('size changed');
+        // console.log('size changed');
         updateTableContents($(element + ' .table-choose').val());
     });
 
     // when the table expression is clicked
     $(element + ' ' + '.table-expr').blur(function() {
-        console.log('expression changed');
+        // console.log('expression changed');
         updateTableContents($(element + ' .table-choose').val());
     });
 
