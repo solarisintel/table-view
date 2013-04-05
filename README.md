@@ -78,9 +78,11 @@ Javascript API to create the widget
 
 API Options
 
-=datasrc:= URL from which data can be retrieved
-=table:= name of the table to be shown on page-load
-=columns:= list of default columns to be displayed
+`datasrc:` URL from which data can be retrieved
+
+`table:` name of the table to be shown on page-load
+
+`columns:` list of default columns to be displayed
 
 License
 =======
