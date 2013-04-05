@@ -9,6 +9,9 @@
         body {
             background-color: #4a1662;
         }
+        .red {
+            color: #934851;
+        }
         thead th {
             background-color: #777;
             color: white;
@@ -18,11 +21,19 @@
             background-color: snow;
             padding: 1ex;
         }
+        ul.sortable {
+            margin: 0;
+        }
         .sortable li {
             list-style-type: none;
             border: 1px solid #ccc;
             margin: 0.25ex;
             cursor: pointer;
+            border-top: 1px solid #DDDDDD;
+            line-height: 20px;
+            padding: 8px;
+            text-align: left;
+            vertical-align: top;
         }
     </style>
 </head>
@@ -34,8 +45,8 @@
                 <ul>
                     <li><strong>Choose Table:</strong> Select the desired table from dropdown</li>
                     <li><strong>Choose Page:</strong> Type the Record Offset (Min 0, Max 100) and Limit (Min 0, Max 100)</li>
-                    <li><strong>Choose Columns:</strong> Enter CSV List of all the columns that should be displayed in table below</li>
-                    <li><strong>Expression:</strong> Any valid SQL filter clause without the <strong>where</strong> keyword.<pre>length(email) > 40</pre></li>
+                    <li><strong>Choose Columns:</strong> <i class="red">Has Autocomplete Support</i> Enter CSV List of all the columns that should be displayed in table below</li>
+                    <li><strong>Expression:</strong>  <i class="red">Has Autocomplete Support</i>Any valid SQL filter clause without the <strong>where</strong> keyword.<pre>length( @email ) > 40</pre>. <i>All columns can be typed with @column</i></li>
                     <li><strong>Export to CSV:</strong> Export the result set to a CSV File</li>
                     <li><strong>Poor man's drag/drop:</strong> Drag 'n' Drop below list elements, the table view will get updated accordingly.</li>
                 </ul>
@@ -43,7 +54,22 @@
             <div class="span10">
                 <!-- markup for the table widget -->
                 <div id="table-container">
+                    <!--
                     <a href="#table-widget-settings" data-toggle="modal" class="btn pull-right"><i class="icon icon-cog"></i> Options</a>
+                    -->
+                    <div id="table-widget-settings" class="form form-inline">
+                        <select class="table-choose">
+                            <option value="employees">Employees</option>
+                            <option value="organisations">Organisations</option>
+                        </select>
+                        <select class="table-limit-page input-medium"></select>
+                        <select class="table-limit-size input-mini"></select>
+                        <input type="text" class="table-columns" placeholder="Columns List">
+                        <input class="table-expr" type="text" placeholder="SQL Expression"></input>
+                        <a href="config.php" class="btn btn-mini btn-danger table-export"><i class="icon icon-white icon-download"></i></a>
+                        <button class="btn btn-mini btn-success table-popover" data-toggle="popover" data-original-title="Choose Columns"><i class="icon icon-white icon-list"></i></button>
+                    </div>
+                    <!--
                     <div id="table-widget-settings" class="modal container hide fade">
                         <div class="modal-header">
                             <h2>Select Table / Options</h2>
@@ -64,9 +90,6 @@
                                     <label>Limit</label>
                                     <select class="table-limit-size input-mini">
                                     </select>
-                                    <!--
-                                    <input type="text" class="table-limits" value="0,10">
-                                    -->
                                 </div>
                                 <div class="span4">
                                     <label>Choose Columns</label>
@@ -86,6 +109,7 @@
                             <button class="btn btn-danger" data-dismiss="modal">Close</button>
                         </div>
                     </div>
+                    -->
                     <div class="table-widget">
                         <span class="table-error alert alert-info hide"></span>
                         <h2 class="table-title"></h2>
@@ -96,9 +120,12 @@
             </div>
         </div>
     </div>
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
     <script src="js/jquery.table-view.js"></script>
     <script src="js/jquery.sortable.js"></script>
+    <script src="js/jquery.a-tools-1.4.1.js"></script>
+    <script src="js/jquery.asuggest.js"></script>
+    <script src="js/underscore-min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/bootstrap-modalmanager.js"></script>
     <script src="js/bootstrap-modal.js"></script>

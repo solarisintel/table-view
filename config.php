@@ -40,16 +40,23 @@ class SqliteDB extends DB
 
         return $row['count(*)'];
     }
+    private function cleanupExpression($expression) {
+        // simplest way is to blindly replace
+        return str_replace('@', '', $expression); // once we have mapping, we can take care of it here
+    }
     public function fetchRows($cols, $table, $limit, $offset, $expression='')
     {
         $rows = array();
         try {
             $c    = implode(', ', $cols);
             $expr = '';
-            if (strlen($expression) > 0 and preg_match('/([<>=])|(is)|(not)/', $expression)) {
-                $expr = 'where '.$expression; // FIXME: sql-injection friendly. So, nothing can be done until query builder is created.
+            if (strlen($expression) > 0 and preg_match('/([<>=])|(is)|(not)/i', $expression)) {
+                $e    = $this->cleanupExpression($expression);
+                $expr = 'where '.$e; // FIXME: sql-injection friendly. So, nothing can be done until query builder is created.
             }
-            $rows = $this->pdo->query("select $c from $table $expr limit $limit offset $offset")->fetchAll(PDO::FETCH_ASSOC);
+            $sql  = "select $c from $table $expr limit $limit offset $offset";
+            error_log($sql);
+            $rows = $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
         } catch (Exception $e) {
         }
 
@@ -220,6 +227,8 @@ $settings = array(
     'limit'      => $limit,
     'offset'     => $offset,
     'expression' => $expression,
+    //'keywords'   => array('AND', 'OR', 'EQ', 'NE', 'LT', 'GT'),
+    'keywords'   => array('AND', 'OR', 'NOT', 'NULL', 'NOTNULL', 'BETWEEN', '=', '!=', '<', '>'),
 );
 
 $rows  = $db->fetchRows($settings['columns'], $settings['table'], $settings['limit'], $settings['offset'], $settings['expression']);

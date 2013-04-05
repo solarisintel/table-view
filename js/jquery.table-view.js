@@ -4,6 +4,25 @@ var TableView = function(el, oel, opt) {
     var options = opt || { datasrc : 'config.php' };
     var tablestate;
 
+// Keys "enum"
+var KEY = {
+    BACKSPACE: 8,
+    TAB: 9,
+    ENTER: 13,
+    ESCAPE: 27,
+    SPACE: 32,
+    PAGE_UP: 33,
+    PAGE_DOWN: 34,
+    END: 35,
+    HOME: 36,
+    LEFT: 37,
+    UP: 38,
+    RIGHT: 39,
+    DOWN: 40,
+    NUMPAD_ENTER: 108,
+    COMMA: 188
+};
+
     function renderSelect(map, choosen) {
         var list = [];
         for (var key in map) {
@@ -16,15 +35,32 @@ var TableView = function(el, oel, opt) {
         return list.join('');
     }
 
+    function initPopover(element) {
+        var html = '<div class="controls table-sort-cols sortable">';
+        var q    = tablestate.allcols;
+        for (var idx in q) {
+            html += '<label class="checkbox"><input type="checkbox" name="' + q[idx] + '">' + q[idx] + '</label><br>';
+        }
+        html += '</div>';
+        $(element + ' .table-popover').popover({
+            html : true,
+            trigger : 'click',
+            container : element,
+            placement : 'bottom',
+            content : html //'<ul class="table-sort-cols sortable"></ul>'
+        });
+    }
+
     function handleSorting(element) {
-        $(element +' .sortable').sortable('destroy');
         var html = '';
         var co   = $(element + ' .table-columns').val();
         var cols = co.split(/,/);
         for(var c in cols) {
             html += '<li>' + cols[c] +'</li>';
         }
-        $(element +' .table-sort-cols').html(html);
+        html += '';
+        $(element + ' .sortable').sortable('destroy');
+        $(element + ' .table-sort-cols').html(html);
         $(element + ' .sortable').sortable().bind('sortupdate', function(e, data) {
             try {
                 e.preventDefault();
@@ -50,7 +86,7 @@ var TableView = function(el, oel, opt) {
         for (var i = 1; i <= total; i++) {
             options[i] = "page - " + i;
         }
-        console.log(options);
+        // console.log(options);
         $(element + ' .table-limit-page').html(renderSelect(options, chosen));
     }
 
@@ -79,7 +115,7 @@ var TableView = function(el, oel, opt) {
                 expression: $(element + ' .table-expr').val(),
                 limits: getTableLimits(element)
             };
-            console.log(params);
+            // console.log(params);
             $.ajax({
                 method: 'GET',
                 url : options.datasrc ,
@@ -89,9 +125,18 @@ var TableView = function(el, oel, opt) {
                     tablestate = a.settings;
                     $(element + ' ' + '.table-error').removeClass('hide').addClass('show').text('Successfully updated the view');
                     $(oelement + ' ' + '.table-view').html(a.table);
-                    $(element + ' ' + '.table-columns-all').text(a.settings.allcols.join(', '));
+                    // $(element + ' ' + '.table-columns-all').text(a.settings.allcols.join(', '));
+                    initPopover(element);
                     handleSorting(element);
                     generatePages();
+                    var querysuggest = _.union(
+                        _.map(a.settings.allcols, function(v) { return  '@' + v; }),
+                        _.map(a.settings.keywords, function(v) { return v; })
+                    );
+                    $(element + ' ' + '.table-expr').asuggest(querysuggest, {delimiter : ','});
+                    var columnsuggest = _.map(a.settings.allcols, function(v) { return  v; });
+                    $(element + ' ' + '.table-columns').asuggest(columnsuggest, {delimiter : ','});
+                    // initialize popover
                 },
                 failure: function(a, b, c) {
                     $(element + ' ' + '.table-error').removeClass('hide').addClass('show').text('Problem communicating with server. Please try again later');
@@ -127,6 +172,14 @@ var TableView = function(el, oel, opt) {
         updateTableContents($(element + ' .table-choose').val());
     });
 
+    /*
+    // when the table expression is clicked
+    $(element + ' ' + '.table-expr').keydown(function(ev) {
+        switch()
+    });
+    */
+
+
     // when the table export button clicked
     $(element + ' ' + '.table-export').on('click', function(e) {
         e.preventDefault();
@@ -151,6 +204,7 @@ var TableView = function(el, oel, opt) {
 
     // 3. create select options for limit size
     $(element + ' .table-limit-size').html(renderSelect(options.pagesizes, options.defaultsize));
+
 
     // on page-load render active table
     updateTableContents($(element + ' .table-choose').val());
