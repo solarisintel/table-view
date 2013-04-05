@@ -3,57 +3,66 @@ var TableView = function(el, oel, opt) {
     var oelement = oel;
     var options = opt || { datasrc : 'config.php' };
     var tablestate;
+    var ActiveColumns = {};
+    var columnsInited = false;
 
-// Keys "enum"
-var KEY = {
-    BACKSPACE: 8,
-    TAB: 9,
-    ENTER: 13,
-    ESCAPE: 27,
-    SPACE: 32,
-    PAGE_UP: 33,
-    PAGE_DOWN: 34,
-    END: 35,
-    HOME: 36,
-    LEFT: 37,
-    UP: 38,
-    RIGHT: 39,
-    DOWN: 40,
-    NUMPAD_ENTER: 108,
-    COMMA: 188
-};
-
-    function renderSelect(map, choosen) {
+    function renderSelect(map, choosen, useval) {
         var list = [];
         for (var key in map) {
-            if (key == choosen) {
-                list.push('<option selected value="' + key + '">' + map[key] + '</li>');
+            var ll = key, rr = map[key];
+            // if use value as key itself
+            if (useval === true) {
+                ll = rr;
+            }
+            if (_.isArray(choosen)) {
+                if (_.contains(choosen, map[key])) {
+                    list.push('<option selected value="' + ll + '">' + rr + '</li>');
+                } else {
+                    list.push('<option value="' + ll + '">' + rr + '</li>');
+                }
             } else {
-                list.push('<option value="' + key + '">' + map[key] + '</li>');
+                if (key == choosen) {
+                    list.push('<option selected value="' + ll + '">' + rr + '</li>');
+                } else {
+                    list.push('<option value="' + ll + '">' + rr + '</li>');
+                }
             }
         }
+        // console.log(list);
         return list.join('');
     }
 
     function initPopover(element) {
-        /*
-        var html = '<div class="controls table-sort-cols sortable">';
-        var q    = tablestate.allcols;
-        for (var idx in q) {
-            html += '<label class="checkbox"><input type="checkbox" name="' + q[idx] + '">' + q[idx] + '</label><br>';
-        }
-        html += '</div>';
-        $(element + ' .table-popover').popover({
-            html : true,
-            trigger : 'click',
-            container : element,
-            placement : 'bottom',
-            content : html //'<ul class="table-sort-cols sortable"></ul>'
-        });
-       */
+            $(element + ' .table-popover').popover('destroy');
+            var html = '<div class="controls table-sort-cols sortable">';
+            var q    = tablestate.allcols;
+            var co   = $(element + ' .table-columns').val();
+            var cols = co.split(/,/);
+            for (var idx in q) {
+                if (_.contains(cols, q[idx])) {
+                    html += '<label class="checkbox"><input checked type="checkbox" name="' + q[idx] + '">' + q[idx] + '</label><br>';
+                } else {
+                    html += '<label class="checkbox"><input type="checkbox" name="' + q[idx] + '">' + q[idx] + '</label><br>';
+                }
+            }
+            html += '</div>';
+            //if (columnsInited !== true) {
+                $(element + ' .table-popover').popover({
+                    html : true,
+                    trigger : 'click',
+                    container : element,
+                    placement : 'bottom',
+                    content : html //'<ul class="table-sort-cols sortable"></ul>'
+                });
+                columnsInited = true;
+            //}
+            // $(element + ' .table-popover').popover('hide');
+            $(element + ' .table-popover').data('content', html);
+            columnsInited = true;
     }
 
     function handleSorting(element) {
+        /*
         $(element + ' .sortable').sortable('destroy');
         var html = '<ul class="table-sort-cols sortable">';
         var co   = $(element + ' .table-columns').val();
@@ -80,11 +89,12 @@ var KEY = {
                     // console.log( index + ": " + $(this).text() );
                     neworder.push($(this).text());
                 });
-                $(element + ' .table-columns').val(neworder.join(','));
-                $(element + ' .table-columns').trigger('blur');
+                //$(element + ' .table-columns').val(neworder.join(','));
+                //$(element + ' .table-columns').trigger('blur');
             } catch(ex) {
             }
         });
+       */
     }
 
     function generatePages() {
@@ -139,10 +149,7 @@ var KEY = {
                     initPopover(element);
                     handleSorting(element);
                     generatePages();
-                    var querysuggest = _.union(
-                        _.map(a.settings.allcols, function(v) { return  '@' + v; }),
-                        _.map(a.settings.keywords, function(v) { return v; })
-                    );
+                    var querysuggest = _.union(_.map(a.settings.allcols, function(v) { return  '@' + v; }), _.map(a.settings.keywords, function(v) { return v; }));
                     $(element + ' ' + '.table-expr').asuggest(querysuggest, {delimiter : ','});
                     var columnsuggest = _.map(a.settings.allcols, function(v) { return  v; });
                     $(element + ' ' + '.table-columns').asuggest(columnsuggest, {delimiter : ','});
@@ -153,6 +160,7 @@ var KEY = {
                 }
             });
         }
+        return true;
     }
 
     // change table contents
@@ -205,6 +213,12 @@ var KEY = {
         window.location.href = newurl;
     });
 
+    // save active columns
+    for (var i = 0; i < options.columns.length; i++) {
+        var n = options.columns[i];
+        ActiveColumns[n] = true;
+    }
+
     // use the settings to update the ui elements
     // 1. set the default table
     $(element +' .table-choose').val(options.table);
@@ -215,6 +229,17 @@ var KEY = {
     // 3. create select options for limit size
     $(element + ' .table-limit-size').html(renderSelect(options.pagesizes, options.defaultsize));
 
+    // 4. listen to the checkboxes that are created in future.
+    $(element + ' input[type="checkbox"]').live('click', function(e) {
+        var n = $(e.target).attr('name');
+        if ($(e.target).is(':checked')) {
+            ActiveColumns[n] = true;
+        } else {
+            delete ActiveColumns[n];
+        }
+        $(element +' .table-columns').attr('value', _.keys(ActiveColumns));
+        updateTableContents($(element + ' .table-choose').val());
+    });
 
     // on page-load render active table
     updateTableContents($(element + ' .table-choose').val());
