@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -17,6 +17,12 @@
             background-color: snow;
             padding: 1ex;
         }
+        .sortable li {
+            list-style-type: none;
+            border: 1px solid #ccc;
+            margin: 0.25ex;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -30,6 +36,7 @@
                     <li><strong>Choose Columns:</strong> Enter CSV List of all the columns that should be displayed in table below</li>
                     <li><strong>Expression:</strong> Any valid SQL filter clause without the <strong>where</strong> keyword.<pre>length(email) > 40</pre></li>
                     <li><strong>Export to CSV:</strong> Export the result set to a CSV File</li>
+                    <li><strong>Poor man's drag/drop:</strong> Drag 'n' Drop below list elements, the table view will get updated accordingly.</li>
                 </ul>
             </div>
             <div class="span10">
@@ -40,7 +47,7 @@
                         <strong>All Columns : </strong><span class="table-columns-all">&nbsp;</span>
                         <hr>
                         <div class="row-fluid">
-                            <div class="span6">
+                            <div class="span4">
                                 <label>Choose Table</label>
                                 <select class="table-choose">
                                     <option value="employees">Employees</option>
@@ -49,11 +56,16 @@
                                 <label>Choose Page (Offset, Limit)</label>
                                 <input type="text" class="table-limits" value="0,10">
                             </div>
-                            <div class="span6">
+                            <div class="span4">
                                 <label>Choose Columns</label>
                                 <input type="text" class="table-columns input-xlarge" value="name,email">
                                 <label>Expression</label>
                                 <textarea class="table-expr input-xlarge"></textarea>
+                            </div>
+                            <div class="span4">
+                                <label>Poor man's drag/drop</label>
+                                <ul class="table-sort-cols sortable">
+                                </ul>
                             </div>
                         </div>
                         <a href="config.php" class="btn btn-info table-export">Export to CSV</a>
@@ -70,9 +82,10 @@
     </div>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script src="jquery.table-view.js"></script>
+                        <script src="jquery.sortable.js"></script>
     <script type="text/javascript">
         // create table widget with already created markup.
-        var t = new TableView('#table-widget', { datasrc : 'config.php', table : 'employees', columns : ['name', 'phone']});
+        var t = new TableView('#table-widget', { datasrc : 'config.php', table : 'employees', columns : ['name', 'phone', 'date', 'rname']});
     </script>
 </body>
 </html>
