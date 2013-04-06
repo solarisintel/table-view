@@ -15,6 +15,9 @@ abstract class DB
     public function fetchRows($cols, $table, $limit, $offset, $expression)
     {
     }
+    public function save($table, $key, $value)
+    {
+    }
 }
 
 /* specific to sqlite */
@@ -74,6 +77,20 @@ class SqliteDB extends DB
         }
         return $rows;
     }
+    public function save($table, $key, $value)
+    {
+        $rows = 0;
+        try {
+            $k    = $this->pdo->quote($key);
+            $v    = $this->pdo->quote($value);
+            $sql  = "update settings set value = $v where tab = $k";
+            error_log($sql);
+            $rows = $this->pdo->exec($sql);
+        } catch (PDOException $e) {
+            $rows = 0;
+        }
+        return $rows;
+    }
 }
 
 /* table renderer */
@@ -124,7 +141,7 @@ class TableView
     public function render(&$rows)
     {
         $table = $this->renderHeadings();
-        $table.= $this->renderFooter(count($rows));
+        // $table.= $this->renderFooter(count($rows));
         $table.= $this->renderBody($rows);
 
         return $table;
@@ -240,6 +257,7 @@ $settings = array(
     'limit'      => $limit,
     'offset'     => $offset,
     'expression' => $expression,
+    'status'     => 'Showing <strong>' . $offset . ' - '. ($offset + $limit) .'</strong> of <strong>'.$count.'</strong> Records',
     //'keywords'   => array('AND', 'OR', 'EQ', 'NE', 'LT', 'GT'),
     /*
     'keywords'   => array(
@@ -263,6 +281,16 @@ if ($type === 'html') {
     header('Content-Type: application/json');
     $view = new ExportView($settings);
     $view->render($rows, "attachment.csv");
+    exit;
+} elseif ($type === 'save') {
+    error_log(json_encode($_GET));
+    header('Content-Type: application/json');
+    $ret = $db->save($_GET['table'], $_GET['order']);
+    if ($ret > 0) {
+        echo json_encode(array('e' => 'success'));
+    } else {
+        echo json_encode(array('e' => 'failure'));
+    }
     exit;
 } else {
     echo 'Invalid Request';

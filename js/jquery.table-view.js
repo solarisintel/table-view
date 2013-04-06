@@ -147,13 +147,15 @@ var TableView = function(el, oel, opt) {
                     tablestate = a.settings;
                     $(element + ' ' + '.table-error').removeClass('hide').addClass('show').text('Successfully updated the view');
                     $(oelement + ' ' + '.table-view').html(a.table);
-                    console.log($(oelement).find('.table-view'));
+                    // console.log($(oelement).find('.table-view'));
                     $(element + ' ' + '.table-columns-all').text(a.settings.allcols.join(', '));
                     $(element + ' ' + '.table-keywords-all').text(a.settings.keywords.join(', '));
+                    $(element + ' ' + '.table-status').html(a.settings.status);
                     initPopover(element);
                     // initQueryBuilder();
                     handleSorting(element);
                     generatePages();
+                    enableDragDrop();
                     var querysuggest = {
                         suggests : [],
                         cols     : a.settings.allcols,
@@ -161,8 +163,8 @@ var TableView = function(el, oel, opt) {
                         empty    : [],
                         conj     : a.settings.conj
                     };
-                    //$(element + ' ' + '.table-expr').asuggest(querysuggest, {delimiter : ','});
-                    $(element + ' ' + '.table-expr').typeahead();
+                    $(element + ' ' + '.table-expr').asuggest(querysuggest, {delimiter : ','});
+                    //$(element + ' ' + '.table-expr').typeahead();
                     //var querysuggest = _.union(_.map(a.settings.allcols, function(v) { return   v; }), _.map(a.settings.keywords, function(v) { return v; }));
                     //$(element + ' ' + '.table-expr').asuggest(querysuggest, {delimiter : ','});
                     //var querysuggestmultiple = [
@@ -236,33 +238,80 @@ var TableView = function(el, oel, opt) {
         window.location.href = newurl;
     });
 
-    // save active columns
-    for (var i = 0; i < options.columns.length; i++) {
-        var n = options.columns[i];
-        ActiveColumns[n] = true;
-    }
-
     // use the settings to update the ui elements
     // 1. set the default table
     $(element +' .table-choose').val(options.table);
 
     // 2. set the default columns
-    $(element +' .table-columns').attr('value', options.columns.join(','));
+    if ($.cookie(options.table)) {
+        $(element +' .table-columns').attr('value', $.cookie(options.table));
+
+        var o = $.cookie(options.table).split(',');
+
+        // save active columns
+        for (var j = 0; j < o.length; j++) {
+            var m = o[j];
+            ActiveColumns[m] = true;
+        }
+
+    } else {
+        $(element +' .table-columns').attr('value', options.columns.join(','));
+
+        // save active columns
+        for (var i = 0; i < options.columns.length; i++) {
+            var n = options.columns[i];
+            ActiveColumns[n] = true;
+        }
+
+    }
 
     // 3. create select options for limit size
     $(element + ' .table-limit-size').html(renderSelect(options.pagesizes, options.defaultsize));
 
     // 4. listen to the checkboxes that are created in future.
     $(element + ' input[type="checkbox"]').live('click', function(e) {
+        console.log(ActiveColumns);
         var n = $(e.target).attr('name');
         if ($(e.target).is(':checked')) {
             ActiveColumns[n] = true;
         } else {
             delete ActiveColumns[n];
         }
-        $(element +' .table-columns').attr('value', _.keys(ActiveColumns));
+        $(element +' .table-columns').attr('value', _.keys(ActiveColumns).join(','));
+        $.cookie(options.table, _.keys(ActiveColumns).join(','));
+        console.log(ActiveColumns);
         updateTableContents($(element + ' .table-choose').val());
     });
+
+    function enableDragDrop() {
+        $(oelement + ' ' + '.table-view').dragtable({persistState : function(table) {
+            var order = [];
+            table.el.find('th').each(function(i) {
+                order.push($(this).text());
+            });
+            var params = {
+                type : 'save',
+                table : tablestate.table,
+                order : order.join(',')
+            };
+            $(element + ' .table-columns').val(order.join(','));
+            $.cookie(tablestate.table, $(element + ' .table-columns').val());
+            /*
+            $.ajax({
+                type: 'GET',
+                url : options.datasrc ,
+                contentType: 'json',
+                data: params,
+                success: function(a, b, c) {
+                    console.log(a.responseText);
+                },
+                failure: function(a, b, c) {
+                    console.log(a.responseText);
+                }
+            });
+            */
+        }});
+    }
 
     function initQueryBuilder() {
         if (qbInited !== false) {

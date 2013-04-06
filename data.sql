@@ -227,4 +227,11 @@ INSERT INTO organisations (company,location,date,description,longdesc) VALUES ('
 INSERT INTO organisations (company,location,date,description,longdesc) VALUES ('Cathleen','Armenia','Fri, 27th, 2012','tempor, est ac mattis semper, dui lectus rutrum urna, nec','magna. Cras convallis convallis dolor. Quisque tincidunt');
 INSERT INTO organisations (company,location,date,description,longdesc) VALUES ('Velma','Turks and Caicos Islands','Mon, 11th, 2013','accumsan neque et nunc. Quisque ornare tortor at risus. Nunc','pede. Praesent eu dui. Cum sociis natoque penatibus');
 
+CREATE TABLE settings (
+   tab   varchar(32) unique not null,
+   value text default null
+);
+
+INSERT INTO settings (tab, value) VALUES ('organisations', 'company,location,date');
+INSERT INTO settings (tab, value) VALUES ('employees', 'name,date,phone,rname');
 

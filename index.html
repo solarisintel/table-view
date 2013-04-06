@@ -45,6 +45,37 @@
             margin-top: -10px;
             padding: 2ex;
         }
+        .dragtable-sortable { 
+            list-style-type: none; margin: 0; padding: 0; -moz-user-select: none;
+        }
+        .dragtable-sortable li {
+            margin: 0; padding: 0; float: left; font-size: 1em; background: white; 
+        }
+
+        .dragtable-sortable th, .dragtable-sortable td{
+            border-left: 0px;
+        }
+
+        .dragtable-sortable li:first-child th, .dragtable-sortable li:first-child td {
+            border-left: 1px solid #CCC; 
+        }
+
+        .ui-sortable-helper {
+            opacity: 0.7;filter: alpha(opacity=70);
+        }
+        .ui-sortable-placeholder { 
+            -moz-box-shadow: 4px 5px 4px #C6C6C6 inset;
+            -webkit-box-shadow: 4px 5px 4px #C6C6C6 inset;
+            box-shadow: 4px 5px 4px #C6C6C6 inset;
+            border-bottom: 1px solid #CCCCCC;
+            border-top: 1px solid #CCCCCC;
+            visibility: visible !important;
+            background: #EFEFEF !important; 
+            visibility: visible !important;
+        }
+        .ui-sortable-placeholder * { 
+            opacity: 0.0; visibility: hidden; 
+        }
     </style>
 </head>
 <body>
@@ -77,6 +108,7 @@
                             </div>
                             <div class="form form-inline">
                                 <input style="margin-bottom: 1ex" class="table-expr span12" type="text" placeholder="SQL Expression">
+                                <span class="table-status label"></span>
                                 <select class="table-choose">
                                     <option value="employees">Employees</option>
                                 </select>
@@ -105,6 +137,7 @@
                             </div>
                             <div class="form form-inline">
                                 <input style="margin-bottom: 1ex" class="table-expr span12" type="text" placeholder="SQL Expression">
+                                <span class="table-status label"></span>
                                 <select class="table-choose">
                                     <option value="organisations">Organisations</option>
                                 </select>
@@ -128,12 +161,19 @@
             </div>
         </div>
     </div>
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
     <script src="js/jquery.sortable.js"></script>
     <script src="js/jquery.a-tools-1.4.1.js"></script>
     <script src="js/jquery.asuggest.js"></script>
     <script src="js/underscore-min.js"></script>
     <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery.chili-2.2.js"></script>
+    <script src="js/jquery.ui.core.js"></script>
+    <script src="js/jquery.ui.widget.js"></script>
+    <script src="js/jquery.ui.mouse.js"></script>
+    <script src="js/jquery.ui.sortable.js"></script>
+    <script src="js/jquery.dragtable.js"></script>
+    <script src="js/jquery.cookie.js"></script>
     <!--
     <script src="js/bootstrap-modalmanager.js"></script>
     <script src="js/bootstrap-modal.js"></script>
