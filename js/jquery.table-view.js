@@ -147,6 +147,7 @@ var TableView = function(el, oel, opt) {
                     tablestate = a.settings;
                     $(element + ' ' + '.table-error').removeClass('hide').addClass('show').text('Successfully updated the view');
                     $(oelement + ' ' + '.table-view').html(a.table);
+                    console.log($(oelement).find('.table-view'));
                     $(element + ' ' + '.table-columns-all').text(a.settings.allcols.join(', '));
                     $(element + ' ' + '.table-keywords-all').text(a.settings.keywords.join(', '));
                     initPopover(element);
@@ -160,7 +161,8 @@ var TableView = function(el, oel, opt) {
                         empty    : [],
                         conj     : a.settings.conj
                     };
-                    $(element + ' ' + '.table-expr').asuggest(querysuggest, {delimiter : ','});
+                    //$(element + ' ' + '.table-expr').asuggest(querysuggest, {delimiter : ','});
+                    $(element + ' ' + '.table-expr').typeahead();
                     //var querysuggest = _.union(_.map(a.settings.allcols, function(v) { return   v; }), _.map(a.settings.keywords, function(v) { return v; }));
                     //$(element + ' ' + '.table-expr').asuggest(querysuggest, {delimiter : ','});
                     //var querysuggestmultiple = [

@@ -33,38 +33,33 @@ HTML Markup looks like this
 
 ```
 <!-- markup for the table widget -->
-                <div id="table-widget">
-                    <div class="well">
-                        <h2>Select Table / Options</h2>
-                        <strong>All Columns : </strong><span class="table-columns-all">&nbsp;</span>
-                        <hr>
-                        <div class="row-fluid">
-                            <div class="span6">
-                                <label>Choose Table</label>
-                                <select class="table-choose">
-                                    <option value="employees">Employees</option>
-                                    <option value="organisations">Organisations</option>
-                                </select>
-                                <label>Choose Page (Offset, Limit)</label>
-                                <input type="text" class="table-limits" value="0,10">
-                            </div>
-                            <div class="span6">
-                                <label>Choose Columns</label>
-                                <input type="text" class="table-columns input-xlarge" value="name,email">
-                                <label>Expression</label>
-                                <textarea class="table-expr input-xlarge"></textarea>
-                            </div>
-                        </div>
-                        <a href="config.php" class="btn btn-info table-export">Export to CSV</a>
-                    </div>
-                    <div class="table-widget">
-                        <span class="table-error" class="alert hide"></span>
-                        <h2 class="table-title"></h2>
-                        <table class="table-view table table-bordered"></table>
-                    </div>
-                </div>
-                <!-- markup for the table widget -->
-
+<div class="tab-pane" id="table-container-2">
+    <div id="table-widget-settings-2" class="form form-inline">
+        <div class="hide form form-inline" style="margin-bottom: 1ex">
+            <strong>All Columns : </strong><pre class="table-columns-all">&nbsp;</pre>
+            <strong>All keywords : </strong><pre class="table-keywords-all">&nbsp;</pre>
+        </div>
+        <div class="form form-inline">
+            <input style="margin-bottom: 1ex" class="table-expr span12" type="text" placeholder="SQL Expression">
+            <select class="table-choose">
+                <option value="organisations">Organisations</option>
+            </select>
+            <select class="table-limit-page input-medium"></select>
+            <select class="table-limit-size input-mini"></select>
+            <input type="hidden" class="table-columns" placeholder="Columns List">
+            <div class="pull-right">
+                <a href="config.php" class="btn btn-mini btn-danger table-export"><i class="icon icon-white icon-download">&nbsp;</i></a>
+                <button class="btn btn-mini btn-success table-popover" data-toggle="popover" data-original-title="Choose Columns"><i class="icon icon-white icon-list">&nbsp;</i></button>
+            </div>
+        </div>
+    </div>
+    <div class="table-widget">
+        <span class="table-error alert alert-info hide">&nbsp;</span>
+        <h2 class="table-title"></h2>
+        <table class="table-view table table-bordered"></table>
+    </div>
+</div>
+<!-- markup for the table widget -->
 ```
 
 Javascript API to create the widget
@@ -72,7 +67,23 @@ Javascript API to create the widget
 ````
 <script src="jquery.table-view.js"></script>
 <script>
-    var t = new TableWidget('#table-widget', { datasrc : 'config.php', table : 'employees', columns : ['name', 'phone']});
+    var s = new TableView(
+        '#table-widget-settings-2',
+        '#table-container-2',
+        { 
+            datasrc : 'config.php',
+            table : 'organisations',
+            columns : ['company', 'location', 'date'],
+            pagesizes : {
+                "5"   : "5",
+                "10"  : "10",
+                "25"  : "25",
+                "50"  : "50",
+                "100" : "100"
+            },
+            defaultsize : 10
+        }
+    );
 </script>
 ````
 

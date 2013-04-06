@@ -36,6 +36,15 @@
             text-align: left;
             vertical-align: top;
         }
+        .nav-tabs {
+            margin-bottom: 0;
+        }
+        .tab-pane {
+            border: 1px solid #ccc;
+            padding-top: -10px;
+            margin-top: -10px;
+            padding: 2ex;
+        }
     </style>
 </head>
 <body>
@@ -53,52 +62,69 @@
                 </ul>
             </div>
             <div class="span10">
-                <!-- markup for the table widget -->
-                <div id="table-container">
-                    <div id="table-widget-settings" class="form form-inline">
-                        <h3>Naresh's Table Explorer</h3>
-                        <div class="hide form form-inline" style="margin-bottom: 1ex">
-                            <strong>All Columns : </strong><pre class="table-columns-all">&nbsp;</pre>
-                            <strong>All keywords : </strong><pre class="table-keywords-all">&nbsp;</pre>
-                        </div>
-                        <div class="form form-inline">
-                            <input style="margin-bottom: 1ex" class="table-expr span12" type="text" placeholder="SQL Expression">
-                            <select class="table-choose">
-                                <option value="employees">Employees</option>
-                            </select>
-                            <select class="table-limit-page input-medium"></select>
-                            <select class="table-limit-size input-mini"></select>
-                            <input type="hidden" class="table-columns" placeholder="Columns List">
-                            <div class="pull-right">
-                                <a href="config.php" class="btn btn-mini btn-danger table-export"><i class="icon icon-white icon-download"></i></a>
-                                <button class="btn btn-mini btn-success table-popover" data-toggle="popover" data-original-title="Choose Columns"><i class="icon icon-white icon-list"></i></button>
+                <h3>Naresh's Table Explorer</h3>
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="#table-container-1" data-toggle="tab">Employees</a></li>
+                    <li><a href="#table-container-2" data-toggle="tab">Organisations</a></li>
+                </ul>
+                <div class="tab-content">
+                    <!-- markup for the table widget -->
+                    <div class="tab-pane active" id="table-container-1">
+                        <div id="table-widget-settings-1" class="form form-inline">
+                            <div class="hide form form-inline" style="margin-bottom: 1ex">
+                                <strong>All Columns : </strong><pre class="table-columns-all">&nbsp;</pre>
+                                <strong>All keywords : </strong><pre class="table-keywords-all">&nbsp;</pre>
                             </div>
-                            <!--
-                            <a href="#table-container-qb" data-toggle="modal" class="btn btn-mini btn-inverse"><i class="icon icon-white icon-edit"></i></a>
-                            -->
+                            <div class="form form-inline">
+                                <input style="margin-bottom: 1ex" class="table-expr span12" type="text" placeholder="SQL Expression">
+                                <select class="table-choose">
+                                    <option value="employees">Employees</option>
+                                </select>
+                                <select class="table-limit-page input-medium"></select>
+                                <select class="table-limit-size input-mini"></select>
+                                <input type="hidden" class="table-columns" placeholder="Columns List">
+                                <div class="pull-right">
+                                    <a href="config.php" class="btn btn-mini btn-danger table-export"><i class="icon icon-white icon-download">&nbsp;</i></a>
+                                    <button class="btn btn-mini btn-success table-popover" data-toggle="popover" data-original-title="Choose Columns"><i class="icon icon-white icon-list">&nbsp;</i></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-widget">
+                            <span class="table-error alert alert-info hide">&nbsp;</span>
+                            <h2 class="table-title"></h2>
+                            <table class="table-view table table-bordered"></table>
                         </div>
                     </div>
-                    <!--
-                    <div id="table-container-qb" class="modal container hide fade">
-                        <div class="modal-header">
-                            <h3>Query Builder</h3>
+                    <!-- markup for the table widget -->
+                    <!-- markup for the table widget -->
+                    <div class="tab-pane" id="table-container-2">
+                        <div id="table-widget-settings-2" class="form form-inline">
+                            <div class="hide form form-inline" style="margin-bottom: 1ex">
+                                <strong>All Columns : </strong><pre class="table-columns-all">&nbsp;</pre>
+                                <strong>All keywords : </strong><pre class="table-keywords-all">&nbsp;</pre>
+                            </div>
+                            <div class="form form-inline">
+                                <input style="margin-bottom: 1ex" class="table-expr span12" type="text" placeholder="SQL Expression">
+                                <select class="table-choose">
+                                    <option value="organisations">Organisations</option>
+                                </select>
+                                <select class="table-limit-page input-medium"></select>
+                                <select class="table-limit-size input-mini"></select>
+                                <input type="hidden" class="table-columns" placeholder="Columns List">
+                                <div class="pull-right">
+                                    <a href="config.php" class="btn btn-mini btn-danger table-export"><i class="icon icon-white icon-download">&nbsp;</i></a>
+                                    <button class="btn btn-mini btn-success table-popover" data-toggle="popover" data-original-title="Choose Columns"><i class="icon icon-white icon-list">&nbsp;</i></button>
+                                </div>
+                            </div>
                         </div>
-                        <div class="modal-body">
-                            <div class="query"></div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-success" id="table-container-qb-btnquery">Query</button>
-                            <button class="btn btn-danger" data-dismiss="modal">Close</button>
+                        <div class="table-widget">
+                            <span class="table-error alert alert-info hide">&nbsp;</span>
+                            <h2 class="table-title"></h2>
+                            <table class="table-view table table-bordered"></table>
                         </div>
                     </div>
-                    -->
-                    <div class="table-widget">
-                        <span class="table-error alert alert-info hide"></span>
-                        <h2 class="table-title"></h2>
-                        <table class="table-view table table-bordered"></table>
-                    </div>
+                    <!-- markup for the table widget -->
                 </div>
-                <!-- markup for the table widget -->
             </div>
         </div>
     </div>
@@ -124,8 +150,8 @@
     <script type="text/javascript">
         // create table widget with already created markup.
         var t = new TableView(
-            '#table-widget-settings',
-            '#table-container',
+            '#table-widget-settings-1',
+            '#table-container-1',
             { 
                 datasrc : 'config.php',
                 table : 'employees',
@@ -138,6 +164,23 @@
                     "100" : "100"
                 },
                 defaultsize : 25
+            }
+        );
+        var s = new TableView(
+            '#table-widget-settings-2',
+            '#table-container-2',
+            { 
+                datasrc : 'config.php',
+                table : 'organisations',
+                columns : ['company', 'location', 'date'],
+                pagesizes : {
+                    "5"   : "5",
+                    "10"  : "10",
+                    "25"  : "25",
+                    "50"  : "50",
+                    "100" : "100"
+                },
+                defaultsize : 10
             }
         );
     </script>
