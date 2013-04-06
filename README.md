@@ -1,7 +1,8 @@
 table-view
 ==========
 
-Goals.
+Goals
+=====
 
 1. Any RDBMS Table
 2. Export of Data
@@ -9,6 +10,19 @@ Goals.
 4. Select Columns
 5. Pagination
 6. Filtering of Data
+
+Features
+========
+
+1. Works with Sqlite (can be extended easily)
+2. Works with Hiphop-php
+3. Download data as CSV
+4. Re-arrange table columns and state is persisted in Cookie
+5. Choose the columns for display
+7. Configurable pagination support
+8. Minimal SQL editor with autocomplete support for filtering of data.
+9. Optional SQL GUI Query Builder is available for filtering
+10. Built with Bootstrap / Jquery / PHP
 
 Run
 ===
