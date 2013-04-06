@@ -56,35 +56,40 @@
                 <!-- markup for the table widget -->
                 <div id="table-container">
                     <div id="table-widget-settings" class="form form-inline">
-                        <div class="hide">
+                        <h3>Naresh's Table Explorer</h3>
+                        <div class="form form-inline" style="margin-bottom: 1ex">
                             <strong>All Columns : </strong><pre class="table-columns-all">&nbsp;</pre>
                             <strong>All keywords : </strong><pre class="table-keywords-all">&nbsp;</pre>
+                            <input class="table-expr span12" type="text" placeholder="SQL Expression"></input>
                         </div>
-                        <h3>Naresh's Table Explorer</h3>
-                        <select class="table-choose">
-                            <option value="employees">Employees</option>
-                        </select>
-                        <select class="table-limit-page input-medium"></select>
-                        <select class="table-limit-size input-mini"></select>
-                        <input type="hidden" class="table-columns" placeholder="Columns List">
-                        <input class="table-expr input-xlarge" readonly type="text" placeholder="SQL Expression"></input>
-                        <a href="config.php" class="btn btn-mini btn-danger table-export"><i class="icon icon-white icon-download"></i></a>
-                        <button class="btn btn-mini btn-success table-popover" data-toggle="popover" data-original-title="Choose Columns"><i class="icon icon-white icon-list"></i></button>
-                        <a href="#table-container-qb" data-toggle="modal" class="btn btn-mini btn-inverse"><i class="icon icon-white icon-edit"></i></a>
+                        <div class="form form-inline">
+                            <select class="table-choose">
+                                <option value="employees">Employees</option>
+                            </select>
+                            <select class="table-limit-page input-medium"></select>
+                            <select class="table-limit-size input-mini"></select>
+                            <input type="hidden" class="table-columns" placeholder="Columns List">
+                            <a href="config.php" class="btn btn-mini btn-danger table-export"><i class="icon icon-white icon-download"></i></a>
+                            <button class="btn btn-mini btn-success table-popover" data-toggle="popover" data-original-title="Choose Columns"><i class="icon icon-white icon-list"></i></button>
+                            <!--
+                            <a href="#table-container-qb" data-toggle="modal" class="btn btn-mini btn-inverse"><i class="icon icon-white icon-edit"></i></a>
+                            -->
+                        </div>
                     </div>
+                    <!--
                     <div id="table-container-qb" class="modal container hide fade">
                         <div class="modal-header">
                             <h3>Query Builder</h3>
                         </div>
                         <div class="modal-body">
                             <div class="query"></div>
-                            <!-- <pre id="table-container-qb-output"></pre> -->
                         </div>
                         <div class="modal-footer">
                             <button class="btn btn-success" id="table-container-qb-btnquery">Query</button>
                             <button class="btn btn-danger" data-dismiss="modal">Close</button>
                         </div>
                     </div>
+                    -->
                     <div class="table-widget">
                         <span class="table-error alert alert-info hide"></span>
                         <h2 class="table-title"></h2>
@@ -101,10 +106,18 @@
     <script src="js/jquery.asuggest.js"></script>
     <script src="js/underscore-min.js"></script>
     <script src="js/bootstrap.min.js"></script>
+    <!--
     <script src="js/bootstrap-modalmanager.js"></script>
-    <script src="js/jquery.chosen.js"></script>
     <script src="js/bootstrap-modal.js"></script>
+    <script src="js/jquery.chosen.js"></script>
+    -->
     <script src="js/condition-builder.js"></script>
+    <!--
+    <script src="js/bootstrap-typeahead.js"></script>
+    <script src="js/rangy-core.js"></script>
+    <script src="js/caret-position.js"></script>
+    <script src="js/bootstrap-tagautocomplete.js"></script>
+    -->
     <script src="js/jquery.table-view.js"></script>
     <script type="text/javascript">
         // create table widget with already created markup.

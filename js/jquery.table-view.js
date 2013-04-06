@@ -150,13 +150,16 @@ var TableView = function(el, oel, opt) {
                     $(element + ' ' + '.table-columns-all').text(a.settings.allcols.join(', '));
                     $(element + ' ' + '.table-keywords-all').text(a.settings.keywords.join(', '));
                     initPopover(element);
-                    initQueryBuilder();
+                    // initQueryBuilder();
                     handleSorting(element);
                     generatePages();
-                    var querysuggest = _.union(_.map(a.settings.allcols, function(v) { return  '@' + v; }), _.map(a.settings.keywords, function(v) { return v; }));
+                    var querysuggest = _.union(_.map(a.settings.allcols, function(v) { return   v; }), _.map(a.settings.keywords, function(v) { return v; }));
                     $(element + ' ' + '.table-expr').asuggest(querysuggest, {delimiter : ','});
+                    //$(element + ' ' + '.table-expr').tagautocomplete({source : querysuggest, character : '@'});
+                    /*
                     var columnsuggest = _.map(a.settings.allcols, function(v) { return  v; });
                     $(element + ' ' + '.table-columns').asuggest(columnsuggest, {delimiter : ','});
+                    */
                     // initialize popover
                 },
                 failure: function(a, b, c) {
@@ -245,23 +248,6 @@ var TableView = function(el, oel, opt) {
         updateTableContents($(element + ' .table-choose').val());
     });
 
-    // initialize the query builder
-    /*
-    addqueryroot('.query', true);
-
-    $(oelement + '-qb-btnquery').click(function () {
-        var con = getCondition('.query >table');
-        var k = getQuery(con);
-        $(element + ' .table-expr').val(k);
-        alert(k);
-    });
-
-    $([oelement + '-qb .col', oelement + '-qb .op']).live('change', function() {
-        var con = getCondition('.query >table');
-        var k = getQuery(con);
-        $(oelement + '-qb-output').html(k);
-    });
-    */
     function initQueryBuilder() {
         if (qbInited !== false) {
             return;
@@ -275,28 +261,8 @@ var TableView = function(el, oel, opt) {
         statement += '<select class="col input-medium">';
         statement += renderSelect(tablestate.allcols, null, true);
         statement += '</select> ';
-        /*
-        statement += '<select class="col input-small">';
-        statement += '<option value="a">a</option>';
-        statement += '<option value="b">b</option>';
-        statement += '<option value="c">c</option>';
-        statement += '<option value="d">d</option>';
-        statement += '<option value="e">e</option>';
-        statement += '<option value="f">f</option>';
-        statement += '<option value="g">g</option>';
-        statement += '</select>';
-        */
-
         statement += '<select class="op input-medium">';
         statement += renderSelect(tablestate.keywords, null, true);
-        /*
-        statement += '<option value="=">=</option>';
-        statement += '<option value="!=">!=</option>';
-        statement += '<option value=">">&gt;</option>';
-        statement += '<option value="<">&lt;</option>';
-        statement += '<option value="is null">is null</option>';
-        statement += '<option value="is not null">is not null</option>';
-        */
         statement += '</select> ';
 
         statement += '<input type="text" class="input-mini" /></div>';

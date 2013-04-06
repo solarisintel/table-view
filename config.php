@@ -237,7 +237,11 @@ $settings = array(
     'offset'     => $offset,
     'expression' => $expression,
     //'keywords'   => array('AND', 'OR', 'EQ', 'NE', 'LT', 'GT'),
-    'keywords'   => array('=', '!=', '<', '>', '>=', '<=', 'IS NULL', 'IS NOT NULL', 'LIKE', 'NOT LIKE'),
+    'keywords'   => array(
+        '= ', '!= ', '< ', '> ', '>= ', '<= ',
+        'IS NULL', 'IS NOT NULL', 'NOT NULL', 'LIKE', 'NOT LIKE', 'AND', 'OR', 'EQ', 'NE', 'LT', 'GT',
+        'is null', 'is not null', 'not null', 'like', 'not like', 'and', 'or', 'eq', 'ne', 'lt', 'gt'
+    )
 );
 
 $rows  = $db->fetchRows($settings['columns'], $settings['table'], $settings['limit'], $settings['offset'], $settings['expression']);
