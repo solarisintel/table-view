@@ -10,6 +10,14 @@
         body {
             background-color: #4a1662;
         }
+        h1, h2, h3, h4, h5, h6 {
+            color: #8f140d;
+        }
+        .title {
+            color: #777;
+            font-weight: normal;
+            font-size: 90%;
+        }
         .red {
             color: #934851;
         }
@@ -20,7 +28,9 @@
         .container {
             margin-top: 2ex;
             background-color: snow;
+            opacity: 0.95;
             padding: 1ex;
+            border-radius: 10px;
         }
         ul.sortable {
             margin: 0;
@@ -82,7 +92,7 @@
     <div class="container">
         <div class="row-fluid">
             <div class="span12">
-                <h3>Naresh's Table Explorer</h3>
+                <h3>RDBMS Table Explorer - v1.0 <span class="title">( nareshv@ )</span> </h3>
                 <ul class="nav nav-tabs">
                     <li class="active"><a href="#table-container-1" data-toggle="tab">Employees</a></li>
                     <li><a href="#table-container-2" data-toggle="tab">Organisations</a></li>

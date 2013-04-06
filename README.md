@@ -33,16 +33,17 @@ HTML Markup looks like this
 
 ```
 <!-- markup for the table widget -->
-<div class="tab-pane" id="table-container-2">
-    <div id="table-widget-settings-2" class="form form-inline">
+<div class="tab-pane active" id="table-container-1">
+    <div id="table-widget-settings-1" class="form form-inline">
         <div class="hide form form-inline" style="margin-bottom: 1ex">
             <strong>All Columns : </strong><pre class="table-columns-all">&nbsp;</pre>
             <strong>All keywords : </strong><pre class="table-keywords-all">&nbsp;</pre>
         </div>
         <div class="form form-inline">
             <input style="margin-bottom: 1ex" class="table-expr span12" type="text" placeholder="SQL Expression">
+            <span class="table-status label"></span>
             <select class="table-choose">
-                <option value="organisations">Organisations</option>
+                <option value="employees">Employees</option>
             </select>
             <select class="table-limit-page input-medium"></select>
             <select class="table-limit-size input-mini"></select>
@@ -60,6 +61,7 @@ HTML Markup looks like this
     </div>
 </div>
 <!-- markup for the table widget -->
+
 ```
 
 Javascript API to create the widget
@@ -68,8 +70,8 @@ Javascript API to create the widget
 <script src="jquery.table-view.js"></script>
 <script>
     var s = new TableView(
-        '#table-widget-settings-2',
-        '#table-container-2',
+        '#table-widget-settings-1',
+        '#table-container-1',
         { 
             datasrc : 'config.php',
             table : 'organisations',
@@ -95,9 +97,15 @@ API Options
 
 `columns:` list of default columns to be displayed
 
+`pagesizes:` Default list of page sizes for fetching records
+
+`defaultsize:` default pagesize (for initial request)
+
 License
 =======
 
 MIT
 
-
+Author
+=====
+Naresh Kumar -- nareshv@ -- http://nareshv.github.io/
