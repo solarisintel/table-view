@@ -1,0 +1,79 @@
+body {
+    background-color: #4a1662;
+}
+h1, h2, h3, h4, h5, h6 {
+    color: #8f140d;
+}
+.title {
+    color: #777;
+    font-weight: normal;
+    font-size: 90%;
+}
+.red {
+    color: #934851;
+}
+thead th {
+    background-color: #777;
+    color: white;
+}
+.container {
+    margin-top: 2ex;
+    background-color: snow;
+    opacity: 0.95;
+    padding: 1ex;
+    border-radius: 10px;
+}
+ul.sortable {
+    margin: 0;
+}
+.sortable li {
+    list-style-type: none;
+    border: 1px solid #ccc;
+    margin: 0.25ex;
+    cursor: pointer;
+    border-top: 1px solid #DDDDDD;
+    line-height: 20px;
+    padding: 8px;
+    text-align: left;
+    vertical-align: top;
+}
+.nav-tabs {
+    margin-bottom: 0;
+}
+.tab-pane {
+    border: 1px solid #ccc;
+    padding-top: -10px;
+    margin-top: -10px;
+    padding: 2ex;
+}
+.dragtable-sortable { 
+    list-style-type: none; margin: 0; padding: 0; -moz-user-select: none;
+}
+.dragtable-sortable li {
+    margin: 0; padding: 0; float: left; font-size: 1em; background: white; 
+}
+
+.dragtable-sortable th, .dragtable-sortable td{
+    border-left: 0px;
+}
+
+.dragtable-sortable li:first-child th, .dragtable-sortable li:first-child td {
+    border-left: 1px solid #CCC; 
+}
+
+.ui-sortable-helper {
+    opacity: 0.7;filter: alpha(opacity=70);
+}
+.ui-sortable-placeholder { 
+    -moz-box-shadow: 4px 5px 4px #C6C6C6 inset;
+    -webkit-box-shadow: 4px 5px 4px #C6C6C6 inset;
+    box-shadow: 4px 5px 4px #C6C6C6 inset;
+    border-bottom: 1px solid #CCCCCC;
+    border-top: 1px solid #CCCCCC;
+    visibility: visible !important;
+    background: #EFEFEF !important; 
+    visibility: visible !important;
+}
+.ui-sortable-placeholder * { 
+    opacity: 0.0; visibility: hidden; 
+}

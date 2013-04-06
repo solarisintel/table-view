@@ -14,15 +14,16 @@ Goals
 Features
 ========
 
-1. Works with Sqlite (can be extended easily)
-2. Works with Hiphop-php
-3. Download data as CSV
-4. Re-arrange table columns and state is persisted in Cookie
-5. Choose the columns for display
-7. Configurable pagination support
-8. Minimal SQL editor with autocomplete support for filtering of data.
-9. Optional SQL GUI Query Builder is available for filtering
-10. Built with Bootstrap / Jquery / PHP
+1. Works with Sqlite (can be extended easily).
+2. Works with Hiphop-php.
+3. Download data as CSV.
+4. Re-arrange table columns and state is persisted in Cookie.
+5. Choose the columns for display.
+7. Configurable pagination support.
+8. Configurable SQL editor with autocompletion support.
+9. Optional SQL GUI Query Builder is available for filtering.
+10. Built with Bootstrap / Jquery / PHP.
+
 
 Run
 ===
@@ -54,14 +55,17 @@ HTML Markup looks like this
             <strong>All keywords : </strong><pre class="table-keywords-all">&nbsp;</pre>
         </div>
         <div class="form form-inline">
-            <input style="margin-bottom: 1ex" class="table-expr span12" type="text" placeholder="SQL Expression">
-            <span class="table-status label"></span>
+            <div class="form-search" style="margin-bottom: 1ex">
+                <input class="table-expr search-query span11" type="text" placeholder="SQL Expression">
+                <button class="btn btn-info table-update-btn">Filter</button>
+            </div>
             <select class="table-choose">
                 <option value="employees">Employees</option>
             </select>
             <select class="table-limit-page input-medium"></select>
             <select class="table-limit-size input-mini"></select>
             <input type="hidden" class="table-columns" placeholder="Columns List">
+            <span class="table-status label"></span>
             <div class="pull-right">
                 <a href="config.php" class="btn btn-mini btn-danger table-export"><i class="icon icon-white icon-download">&nbsp;</i></a>
                 <button class="btn btn-mini btn-success table-popover" data-toggle="popover" data-original-title="Choose Columns"><i class="icon icon-white icon-list">&nbsp;</i></button>
@@ -97,7 +101,12 @@ Javascript API to create the widget
                 "50"  : "50",
                 "100" : "100"
             },
-            defaultsize : 10
+            defaultsize : 10,
+            sqltriggers : {
+                columns : '@a',
+                operators : '@b',
+                compound : '@c'
+            }
         }
     );
 </script>
@@ -114,6 +123,8 @@ API Options
 `pagesizes:` Default list of page sizes for fetching records
 
 `defaultsize:` default pagesize (for initial request)
+
+`sqltriggers` : `{ columns : '@a', operators : '@b' : compound : '@c' }` Default triggers while editing in SQL Mode
 
 License
 =======

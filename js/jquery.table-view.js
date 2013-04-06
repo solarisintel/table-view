@@ -1,11 +1,92 @@
 var TableView = function(el, oel, opt) {
     var element  = el;
     var oelement = oel;
-    var options = opt || { datasrc : 'config.php' };
+    var goptions = opt || { datasrc : 'config.php' };
     var tablestate;
     var ActiveColumns = {};
     var columnsInited = false;
     var qbInited = false;
+
+    function enableAutocomplete(el, o) {
+        var availableTags = o.cols;
+        var helpers       = {
+            /* this is customisable */
+            '@a' : function() {
+                return o.cols;
+            },
+            '@b' : function() {
+                return o.ops;
+            },
+            '@c' : function() {
+                return o.conj;
+            }
+        };
+
+        function split( val ) {
+            return _.compact($.csv.toArray(val, { separator : ' '}));
+        }
+        function extractLast( term ) {
+            return split( term ).pop();
+        }
+
+        $(el)
+            // don't navigate away from the field on tab when selecting an item
+            .bind( "keydown", function( event ) {
+                if ( event.keyCode === $.ui.keyCode.TAB &&
+                        $( this ).data( "ui-autocomplete" ).menu.active ) {
+                    event.preventDefault();
+                }
+            })
+            .bind('keyup', function(evt){
+                var parts = _.compact($.csv.toArray($(this).val(), { separator : ' '}));
+                var cur   = parts[parts.length - 1];
+                var last  = parts[parts.length - 2];
+                var check = cur;
+                switch ((parts.length - 1) % 4) {
+                    case 0:
+                        availableTags = o.cols;
+                        break;
+                    case 1:
+                        availableTags = o.ops;
+                        break;
+                    case 2:
+                        availableTags = o.cols; // can be possible
+                        break;
+                    case 3:
+                        availableTags = o.conj;
+                        break;
+                }
+            })
+            .autocomplete({
+                minLength: 0,
+                source: function( request, response ) {
+                    var parts = _.compact($.csv.toArray(request.term, { separator : ' '}));
+                    var cur   = parts[parts.length - 1];
+                    if (_.isString(cur) && _.isFunction(helpers[cur])) {
+                        // response( helpers[request.term]() );
+                        response( helpers[cur]() );
+                    } else {
+                        // delegate back to autocomplete, but extract the last term
+                        response( $.ui.autocomplete.filter( availableTags, extractLast( request.term ) ) );
+                    }
+                },
+                focus: function() {
+                    // prevent value inserted on focus
+                    return false;
+                },
+                select: function( event, ui ) {
+                    var terms = split( this.value );
+                    // remove the current input
+                    terms.pop();
+                    // add the selected item
+                    terms.push( ui.item.value );
+                    // add placeholder to get the comma-and-space at the end
+                    terms.push( "" );
+                    this.value = terms.join( ' ' );
+                    return false;
+                }
+            });
+    }
 
     function renderSelect(map, choosen, useval) {
         var list = [];
@@ -104,17 +185,16 @@ var TableView = function(el, oel, opt) {
         var size   = $(element + ' .table-limit-size').val();
         var chosen = $(element + ' .table-limit-page').val();
         var total =  Math.ceil(parseInt(tablestate.total, 10) / parseInt(size, 10));
-        var options = {};
+        var o = {};
         for (var i = 1; i <= total; i++) {
-            options[i] = "page - " + i;
+            o[i] = "page - " + i;
         }
-        // console.log(options);
-        $(element + ' .table-limit-page').html(renderSelect(options, chosen));
+        $(element + ' .table-limit-page').html(renderSelect(o, chosen));
     }
 
     function getTableLimits(element) {
         if (tablestate === undefined) {
-            return [0, options.defaultsize].join(',');
+            return [0, goptions.defaultsize].join(',');
         }
         var limit = parseInt($(element + ' .table-limit-size').val(), 10);
         var page  = parseInt($(element + ' .table-limit-page').val(), 10);
@@ -140,17 +220,16 @@ var TableView = function(el, oel, opt) {
             // console.log(params);
             $.ajax({
                 method: 'GET',
-                url : options.datasrc ,
+                url : goptions.datasrc ,
                 contentType: 'json',
                 data: params,
                 success: function(a, b, c) {
                     tablestate = a.settings;
                     $(element + ' ' + '.table-error').removeClass('hide').addClass('show').text('Successfully updated the view');
-                    $(oelement + ' ' + '.table-view').html(a.table);
-                    // console.log($(oelement).find('.table-view'));
                     $(element + ' ' + '.table-columns-all').text(a.settings.allcols.join(', '));
                     $(element + ' ' + '.table-keywords-all').text(a.settings.keywords.join(', '));
                     $(element + ' ' + '.table-status').html(a.settings.status);
+                    $(oelement + ' ' + '.table-view').html(a.table);
                     initPopover(element);
                     // initQueryBuilder();
                     handleSorting(element);
@@ -163,7 +242,8 @@ var TableView = function(el, oel, opt) {
                         empty    : [],
                         conj     : a.settings.conj
                     };
-                    $(element + ' ' + '.table-expr').asuggest(querysuggest, {delimiter : ','});
+                    enableAutocomplete(element + ' ' + '.table-expr', querysuggest);
+                    //$(element + ' ' + '.table-expr').asuggest(querysuggest, {delimiter : ','});
                     //$(element + ' ' + '.table-expr').typeahead();
                     //var querysuggest = _.union(_.map(a.settings.allcols, function(v) { return   v; }), _.map(a.settings.keywords, function(v) { return v; }));
                     //$(element + ' ' + '.table-expr').asuggest(querysuggest, {delimiter : ','});
@@ -189,14 +269,14 @@ var TableView = function(el, oel, opt) {
     }
 
     // change table contents
-    $(element + ' ' + '.table-choose').on('change', function() {
-        var status = updateTableContents($(this).val());
-    });
+    //$(element + ' ' + '.table-choose').on('change', function() {
+    //    var status = updateTableContents($(this).val());
+    //});
 
     // when the table columns change
-    $(element + ' ' + '.table-columns').blur(function() {
-        updateTableContents($(element + ' .table-choose').val());
-    });
+    //$(element + ' ' + '.table-columns').blur(function() {
+    //    updateTableContents($(element + ' .table-choose').val());
+    //});
 
     // when the table limits change
     $(element + ' ' + '.table-limit-page').change(function() {
@@ -210,7 +290,12 @@ var TableView = function(el, oel, opt) {
     });
 
     // when the table expression is clicked
-    $(element + ' ' + '.table-expr').blur(function() {
+    //$(element + ' ' + '.table-expr').blur(function() {
+    //    // console.log('expression changed');
+    //    updateTableContents($(element + ' .table-choose').val());
+    //});
+
+    $(element + ' ' + '.table-update-btn').on('click', function() {
         // console.log('expression changed');
         updateTableContents($(element + ' .table-choose').val());
     });
@@ -240,13 +325,13 @@ var TableView = function(el, oel, opt) {
 
     // use the settings to update the ui elements
     // 1. set the default table
-    $(element +' .table-choose').val(options.table);
+    $(element +' .table-choose').val(goptions.table);
 
     // 2. set the default columns
-    if ($.cookie(options.table)) {
-        $(element +' .table-columns').attr('value', $.cookie(options.table));
+    if ($.cookie(goptions.table)) {
+        $(element +' .table-columns').attr('value', $.cookie(goptions.table));
 
-        var o = $.cookie(options.table).split(',');
+        var o = $.cookie(goptions.table).split(',');
 
         // save active columns
         for (var j = 0; j < o.length; j++) {
@@ -255,22 +340,22 @@ var TableView = function(el, oel, opt) {
         }
 
     } else {
-        $(element +' .table-columns').attr('value', options.columns.join(','));
+        $(element +' .table-columns').attr('value', goptions.columns.join(','));
 
         // save active columns
-        for (var i = 0; i < options.columns.length; i++) {
-            var n = options.columns[i];
+        for (var i = 0; i < goptions.columns.length; i++) {
+            var n = goptions.columns[i];
             ActiveColumns[n] = true;
         }
 
     }
 
     // 3. create select options for limit size
-    $(element + ' .table-limit-size').html(renderSelect(options.pagesizes, options.defaultsize));
+    $(element + ' .table-limit-size').html(renderSelect(goptions.pagesizes, goptions.defaultsize));
 
     // 4. listen to the checkboxes that are created in future.
     $(element + ' input[type="checkbox"]').live('click', function(e) {
-        console.log(ActiveColumns);
+        // console.log(ActiveColumns);
         var n = $(e.target).attr('name');
         if ($(e.target).is(':checked')) {
             ActiveColumns[n] = true;
@@ -278,8 +363,8 @@ var TableView = function(el, oel, opt) {
             delete ActiveColumns[n];
         }
         $(element +' .table-columns').attr('value', _.keys(ActiveColumns).join(','));
-        $.cookie(options.table, _.keys(ActiveColumns).join(','));
-        console.log(ActiveColumns);
+        $.cookie(goptions.table, _.keys(ActiveColumns).join(','));
+        // console.log(ActiveColumns);
         updateTableContents($(element + ' .table-choose').val());
     });
 
