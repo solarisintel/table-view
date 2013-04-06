@@ -113,12 +113,12 @@
             var foundAlreadySelectedValue = false;
             var firstMatchedValue = null;
             // search the variant
-            console.log($area.suggests);
+            // console.log($area.suggests);
             for (var i=0; i<$area.suggests.length; i++){
                 var suggest = $area.suggests[i];
                 // some variant is found
                 if (suggest.indexOf(text) === 0) {
-                    console.log(text);
+                    // console.log(text);
                     if (performCycle){
                         if (text + selectionText == suggest){
                             foundAlreadySelectedValue = true;
@@ -156,7 +156,7 @@
         };
 
         $area.keyup(function(e){
-            var parts = $(this).val().split(/\s+/);
+            var parts = _.compact($.csv.toArray($(this).val(), { separator : ' '}));
             var cur   = parts[parts.length - 1];
             var last  = parts[parts.length - 2];
             var check = cur;
@@ -169,7 +169,7 @@
                     $area.suggests = $area.ops;
                     break;
                 case 2:
-                    $area.suggests = [];
+                    $area.suggests = $area.cols; // can be possible
                     break;
                 case 3:
                     $area.suggests = $area.conj;
