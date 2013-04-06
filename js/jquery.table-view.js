@@ -153,8 +153,22 @@ var TableView = function(el, oel, opt) {
                     // initQueryBuilder();
                     handleSorting(element);
                     generatePages();
-                    var querysuggest = _.union(_.map(a.settings.allcols, function(v) { return   v; }), _.map(a.settings.keywords, function(v) { return v; }));
+                    var querysuggest = {
+                        suggests : [],
+                        cols     : a.settings.allcols,
+                        ops      : a.settings.keywords,
+                        empty    : [],
+                        conj     : a.settings.conj
+                    };
                     $(element + ' ' + '.table-expr').asuggest(querysuggest, {delimiter : ','});
+                    //var querysuggest = _.union(_.map(a.settings.allcols, function(v) { return   v; }), _.map(a.settings.keywords, function(v) { return v; }));
+                    //$(element + ' ' + '.table-expr').asuggest(querysuggest, {delimiter : ','});
+                    //var querysuggestmultiple = [
+                    //    _.map(a.settings.allcols, function(v) { return   v; }),
+                    //    [ '=',  '>' , '>=', '<=' ],
+                    //    [ 'AND', 'OR' ]
+                    //];
+                    //$(element + ' ' + '.table-expr').asuggest(querysuggestmultiple, {delimiter : ','});
                     //$(element + ' ' + '.table-expr').tagautocomplete({source : querysuggest, character : '@'});
                     /*
                     var columnsuggest = _.map(a.settings.allcols, function(v) { return  v; });

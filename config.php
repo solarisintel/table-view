@@ -9,10 +9,10 @@ abstract class DB
     public function getTableColumns($table)
     {
     }
-    public function countRows($table)
+    public function countRows($table, $expression)
     {
     }
-    public function fetchRows($cols, $table, $limit, $offset)
+    public function fetchRows($cols, $table, $limit, $offset, $expression)
     {
     }
 }
@@ -27,26 +27,30 @@ class SqliteDB extends DB
     }
     public function getTableColumns($table)
     {
-        $cols = array();
-        foreach ($this->pdo->query("PRAGMA table_info($table)")->fetchAll(PDO::FETCH_ASSOC) as $row) {
-            $cols[] = $row['name'];
-        }
+        try {
+            $cols = array();
+            foreach ($this->pdo->query("PRAGMA table_info($table)")->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                $cols[] = $row['name'];
+            }
 
-        return $cols;
+            return $cols;
+        } catch (PDOException $e) {
+            return array();
+        }
     }
     public function countRows($table, $expression)
     {
-        $e = '';
-        if (strlen($expression) > 0) {
-            $e   = 'where '.$this->cleanupExpression($expression);
+        try {
+            $e = '';
+            if (strlen($expression) > 0) {
+                $e   = 'where '.$this->cleanupExpression($expression);
+            }
+            $sql = "select count(*) from $table $e";
+            $row = $this->pdo->query($sql)->fetch(PDO::FETCH_ASSOC);
+            return $row['count(*)'];
+        } catch (PDOException $e) {
+            return 0;
         }
-        $sql = "select count(*) from $table $e";
-
-        error_log($sql);
-
-        $row = $this->pdo->query($sql)->fetch(PDO::FETCH_ASSOC);
-
-        return $row['count(*)'];
     }
     private function cleanupExpression($expression) {
         // simplest way is to blindly replace
@@ -66,9 +70,8 @@ class SqliteDB extends DB
             error_log($sql);
             $rows = $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
         } catch (Exception $e) {
+            return $rows;
         }
-
-        return $rows;
     }
 }
 
@@ -237,11 +240,15 @@ $settings = array(
     'offset'     => $offset,
     'expression' => $expression,
     //'keywords'   => array('AND', 'OR', 'EQ', 'NE', 'LT', 'GT'),
+    /*
     'keywords'   => array(
         '= ', '!= ', '< ', '> ', '>= ', '<= ',
         'IS NULL', 'IS NOT NULL', 'NOT NULL', 'LIKE', 'NOT LIKE', 'AND', 'OR', 'EQ', 'NE', 'LT', 'GT',
         'is null', 'is not null', 'not null', 'like', 'not like', 'and', 'or', 'eq', 'ne', 'lt', 'gt'
     )
+    */
+    'keywords'   => array('= ', '!= ', '< ', '> ', '>= ', '<= '),
+    'conj'       => array('and', 'or')
 );
 
 $rows  = $db->fetchRows($settings['columns'], $settings['table'], $settings['limit'], $settings['offset'], $settings['expression']);

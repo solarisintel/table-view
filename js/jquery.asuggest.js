@@ -46,6 +46,8 @@
     };
     $.asuggestFocused = null;
 
+    $.numsuggests = 0; // number of suggestions
+
     $.fn.asuggest = function(suggests, options) {
         return this.each(function(){
             $.makeSuggest(this, suggests, options);
@@ -75,7 +77,11 @@
 
         var KEY = $.asuggestKeys;
         var $area = $(area);
-        $area.suggests = suggests;
+        $area.suggests = suggests.suggests;
+        $area.cols     = suggests.cols;
+        $area.ops      = suggests.ops;
+        $area.empty    = suggests.empty;
+        $area.conj     = suggests.conj;
         $area.options = options;
 
         /* Internal method: get the chunk of text before the cursor */
@@ -95,7 +101,7 @@
             } else {
                 return textBeforeCursor.substr(indexOfDelimiter+1);
             }
-        }
+        };
 
         /* Internal method: get completion.
          * If performCycle is true then analyze getChunk() and and getSelection()
@@ -103,20 +109,22 @@
         $area.getCompletion = function(performCycle) {
             var text = this.getChunk();
             var selectionText = this.getSelection().text;
-            var suggests = this.suggests;
+            //var suggests = $area.suggests;
             var foundAlreadySelectedValue = false;
             var firstMatchedValue = null;
             // search the variant
-            for (var i=0; i<suggests.length; i++){
-                var suggest = suggests[i];
+            console.log($area.suggests);
+            for (var i=0; i<$area.suggests.length; i++){
+                var suggest = $area.suggests[i];
                 // some variant is found
-                if (suggest.indexOf(text) == 0) {
+                if (suggest.indexOf(text) === 0) {
+                    console.log(text);
                     if (performCycle){
                         if (text + selectionText == suggest){
                             foundAlreadySelectedValue = true;
                         } else if (foundAlreadySelectedValue) {
                             return suggest.substr(text.length);
-                        } else if (firstMatchedValue == null) {
+                        } else if (firstMatchedValue === null) {
                             firstMatchedValue = suggest;
                         }
                     } else {
@@ -129,12 +137,13 @@
             } else {
                 return null;
             }
-        }
+        };
+
         $area.updateSelection = function(completion) {
             if (completion) {
                 var _selectionStart = $area.getSelection().start;
                 var _selectionEnd = _selectionStart + completion.length;
-                if ($area.getSelection().text == ""){
+                if ($area.getSelection().text === ""){
                     if ($area.val().length == _selectionStart) { // Weird IE workaround, I really have no idea why it works
                         $area.setCaretPos(_selectionStart + 10000);
                     }
@@ -144,7 +153,29 @@
                 }
                 $area.setSelection(_selectionStart, _selectionEnd);
            }
-        }
+        };
+
+        $area.keyup(function(e){
+            var parts = $(this).val().split(/\s+/);
+            var cur   = parts[parts.length - 1];
+            var last  = parts[parts.length - 2];
+            var check = cur;
+
+            switch ((parts.length - 1) % 4) {
+                case 0:
+                    $area.suggests = $area.cols;
+                    break;
+                case 1:
+                    $area.suggests = $area.ops;
+                    break;
+                case 2:
+                    $area.suggests = [];
+                    break;
+                case 3:
+                    $area.suggests = $area.conj;
+                    break;
+            }
+        });
 
         $area.keydown(function(e){
             if (e.keyCode == KEY.TAB) {
@@ -192,6 +223,7 @@
                 if (!hasSpecialKeysOrShift && $area.options.cycleOnTab){
                     break;
                 }
+                break;
             case KEY.ESC:
             case KEY.BACKSPACE:
             case KEY.DEL:
