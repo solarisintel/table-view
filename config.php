@@ -27,30 +27,31 @@ class SqliteDB extends DB
     }
     public function getTableColumns($table)
     {
+        $cols = array();
         try {
-            $cols = array();
             foreach ($this->pdo->query("PRAGMA table_info($table)")->fetchAll(PDO::FETCH_ASSOC) as $row) {
                 $cols[] = $row['name'];
             }
-
-            return $cols;
         } catch (PDOException $e) {
-            return array();
+            $cols = array();
         }
+        return $cols;
     }
     public function countRows($table, $expression)
     {
+        $e = '';
+        $c = 0;
         try {
-            $e = '';
             if (strlen($expression) > 0) {
                 $e   = 'where '.$this->cleanupExpression($expression);
             }
             $sql = "select count(*) from $table $e";
             $row = $this->pdo->query($sql)->fetch(PDO::FETCH_ASSOC);
-            return $row['count(*)'];
+            $c   = $row['count(*)'];
         } catch (PDOException $e) {
-            return 0;
+            $c = 0;
         }
+        return $c;
     }
     private function cleanupExpression($expression) {
         // simplest way is to blindly replace
@@ -67,11 +68,11 @@ class SqliteDB extends DB
                 $expr = 'where '.$e; // FIXME: sql-injection friendly. So, nothing can be done until query builder is created.
             }
             $sql  = "select $c from $table $expr limit $limit offset $offset";
-            error_log($sql);
             $rows = $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-        } catch (Exception $e) {
-            return $rows;
+        } catch (PDOException $e) {
+            $rows = array();
         }
+        return $rows;
     }
 }
 

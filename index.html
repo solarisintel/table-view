@@ -57,20 +57,22 @@
                 <div id="table-container">
                     <div id="table-widget-settings" class="form form-inline">
                         <h3>Naresh's Table Explorer</h3>
-                        <div class="form form-inline" style="margin-bottom: 1ex">
+                        <div class="hide form form-inline" style="margin-bottom: 1ex">
                             <strong>All Columns : </strong><pre class="table-columns-all">&nbsp;</pre>
                             <strong>All keywords : </strong><pre class="table-keywords-all">&nbsp;</pre>
-                            <input class="table-expr span12" type="text" placeholder="SQL Expression">
                         </div>
                         <div class="form form-inline">
+                            <input style="margin-bottom: 1ex" class="table-expr span12" type="text" placeholder="SQL Expression">
                             <select class="table-choose">
                                 <option value="employees">Employees</option>
                             </select>
                             <select class="table-limit-page input-medium"></select>
                             <select class="table-limit-size input-mini"></select>
                             <input type="hidden" class="table-columns" placeholder="Columns List">
-                            <a href="config.php" class="btn btn-mini btn-danger table-export"><i class="icon icon-white icon-download"></i></a>
-                            <button class="btn btn-mini btn-success table-popover" data-toggle="popover" data-original-title="Choose Columns"><i class="icon icon-white icon-list"></i></button>
+                            <div class="pull-right">
+                                <a href="config.php" class="btn btn-mini btn-danger table-export"><i class="icon icon-white icon-download"></i></a>
+                                <button class="btn btn-mini btn-success table-popover" data-toggle="popover" data-original-title="Choose Columns"><i class="icon icon-white icon-list"></i></button>
+                            </div>
                             <!--
                             <a href="#table-container-qb" data-toggle="modal" class="btn btn-mini btn-inverse"><i class="icon icon-white icon-edit"></i></a>
                             -->
