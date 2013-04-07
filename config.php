@@ -57,8 +57,7 @@ class SqliteDB extends DB
         return $c;
     }
     private function cleanupExpression($expression) {
-        // simplest way is to blindly replace
-        return str_replace('@', '', $expression); // once we have mapping, we can take care of it here
+        return $expression;
     }
     public function fetchRows($cols, $table, $limit, $offset, $expression='')
     {
