@@ -17,11 +17,10 @@ thead th {
     color: white;
 }
 .container {
-    margin-top: 2ex;
-    background-color: snow;
-    opacity: 0.95;
+    margin-top: 1ex;
+    background-color: white;
+    border: 1px solid #ccc;
     padding: 1ex;
-    border-radius: 10px;
 }
 ul.sortable {
     margin: 0;

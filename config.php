@@ -1,192 +1,5 @@
 <?php
 
-/* base class */
-abstract class DB
-{
-    public function __construct()
-    {
-    }
-    public function getTableColumns($table)
-    {
-    }
-    public function countRows($table, $expression)
-    {
-    }
-    public function fetchRows($cols, $table, $limit, $offset, $expression)
-    {
-    }
-    public function save($table, $key, $value)
-    {
-    }
-}
-
-/* specific to sqlite */
-class SqliteDB extends DB
-{
-    public function __construct($file)
-    {
-        $this->pdo = new PDO("sqlite:$file");
-        $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    }
-    public function getTableColumns($table)
-    {
-        $cols = array();
-        try {
-            foreach ($this->pdo->query("PRAGMA table_info($table)")->fetchAll(PDO::FETCH_ASSOC) as $row) {
-                $cols[] = $row['name'];
-            }
-        } catch (PDOException $e) {
-            $cols = array();
-        }
-        return $cols;
-    }
-    public function countRows($table, $expression)
-    {
-        $e = '';
-        $c = 0;
-        try {
-            if (strlen($expression) > 0) {
-                $e   = 'where '.$this->cleanupExpression($expression);
-            }
-            $sql = "select count(*) from $table $e";
-            $row = $this->pdo->query($sql)->fetch(PDO::FETCH_ASSOC);
-            $c   = $row['count(*)'];
-        } catch (PDOException $e) {
-            $c = 0;
-        }
-        return $c;
-    }
-    private function cleanupExpression($expression) {
-        return $expression;
-    }
-    public function fetchRows($cols, $table, $limit, $offset, $expression='')
-    {
-        $rows = array();
-        try {
-            $c    = implode(', ', $cols);
-            $expr = '';
-            if (strlen($expression) > 0) {
-                $e    = $this->cleanupExpression($expression);
-                $expr = 'where '.$e; // FIXME: sql-injection friendly. So, nothing can be done until query builder is created.
-            }
-            $sql  = "select $c from $table $expr limit $limit offset $offset";
-            $rows = $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            $rows = array();
-        }
-        return $rows;
-    }
-    public function save($table, $key, $value)
-    {
-        $rows = 0;
-        try {
-            $k    = $this->pdo->quote($key);
-            $v    = $this->pdo->quote($value);
-            $sql  = "update settings set value = $v where tab = $k";
-            error_log($sql);
-            $rows = $this->pdo->exec($sql);
-        } catch (PDOException $e) {
-            $rows = 0;
-        }
-        return $rows;
-    }
-}
-
-/* table renderer */
-class TableView
-{
-    public function __construct($settings)
-    {
-        $this->settings = $settings;
-    }
-    public function renderHeadings()
-    {
-        $head  = '<thead>';
-        foreach ($this->settings['columns'] as $column) {
-            $head .= '<th>'.$column.'</th>';
-        }
-        $head .= '</thead>';
-
-        return $head;
-    }
-    public function renderBody(&$rows)
-    {
-        if (!empty($rows)) {
-            $body  = '<tbody>';
-            foreach ($rows as $row) {
-                $body .= '<tr>';
-                // This is to preserve the order.
-                foreach ($this->settings['columns'] as $column) {
-                    $body .= '<td>'.$row[$column].'</td>';
-                }
-                $body .= '</tr>';
-            }
-            $body .= '</tbody>';
-        } else {
-            $body = '<tbody><tr><td>Error Fetching Records.</td></tr></tbody>';
-        }
-
-        return $body;
-    }
-    public function renderFooter($cur=0)
-    {
-        $limit = $this->settings['limit'];
-        $offset= $this->settings['offset'];
-        $total = $this->settings['total'];
-        $cols  = count($this->settings['columns']);
-
-        return "<tfoot><tr><th colspan='$cols'>Rows : $cur/$total [Limit : $limit, Offset : $offset]</th></tr></tfoot>";
-    }
-    public function render(&$rows)
-    {
-        $table = $this->renderHeadings();
-        // $table.= $this->renderFooter(count($rows));
-        $table.= $this->renderBody($rows);
-
-        return $table;
-    }
-}
-
-class ExportView
-{
-    public function __construct($settings)
-    {
-        $this->settings = $settings;
-    }
-    public function renderHeadings(&$out)
-    {
-        fputcsv($out, $this->settings['columns']);
-    }
-    public function renderBody(&$rows, &$out)
-    {
-        $newrows = array();
-        if (!empty($rows)) {
-            foreach ($rows as $idx => $row) {
-                // This is to preserve the order.
-                foreach ($this->settings['columns'] as $column) {
-                    $newrows[$idx][] = $row[$column];
-                }
-            }
-            foreach ($newrows as $row) {
-                fputcsv($out, $row);
-            }
-        }
-    }
-    public function render(&$rows, $filename)
-    {
-        header("Content-type: application/octet-stream");
-        header("Content-Disposition: attachment; filename=$filename");
-        header("Pragma: no-cache");
-        header("Expires: 0");
-
-        $out = fopen('php://output', 'w');
-        $this->renderHeadings($out);
-        $this->renderBody($rows, $out);
-        fclose($out);
-    }
-
-}
-
 function failResponse()
 {
     // exit with failure
@@ -196,6 +9,10 @@ function failResponse()
     echo json_encode(array('failure' => true, 'table' => '', 'settings' => $settings));
     exit;
 }
+
+require_once(__DIR__.'/lib/db.php.inc');
+require_once(__DIR__.'/lib/html.php.inc');
+require_once(__DIR__.'/lib/export.php.inc');
 
 /* input request processing starts here */
 
@@ -218,6 +35,7 @@ if (!empty($_GET['expression'])) {
 }
 
 $db = new SqliteDB('sample.db');
+//$db = new MysqlDB('localhost', 'root', '', 'test');
 
 if (!empty($_GET['columns'])) {
     $incolumns = explode(',', $_GET['columns']);
