@@ -1,3 +1,8 @@
+/*
+ * License - MIT
+ * Author  - nareshv@
+ * URL     - https://github.com/nareshv/table-view/
+ */
 var TableView = function(el, oel, opt) {
     var element  = el;
     var oelement = oel;

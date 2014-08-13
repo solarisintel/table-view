@@ -1,4 +1,9 @@
 <?php
+/*
+ * License - MIT
+ * Author  - nareshv@
+ * URL     - https://github.com/nareshv/table-view/
+ */
 
 /* table renderer */
 class TableView

@@ -1,3 +1,8 @@
+/*
+ * License - MIT
+ * Author  - nareshv@
+ * URL     - https://github.com/nareshv/table-view/
+ */
 // create table widget with already created markup.
 var t = new TableView(
     '#table-widget-settings-1',
