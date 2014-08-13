@@ -12,14 +12,10 @@ h1, h2, h3, h4, h5, h6 {
 .red {
     color: #934851;
 }
-thead th {
-    background-color: #777;
-    color: white;
-}
 .container {
     margin-top: 1ex;
     background-color: white;
-    border: 1px solid #ccc;
+    /*border: 1px solid #ccc;*/
     padding: 1ex;
 }
 ul.sortable {
@@ -39,17 +35,11 @@ ul.sortable {
 .nav-tabs {
     margin-bottom: 0;
 }
-.tab-pane {
-    border: 1px solid #ccc;
-    padding-top: -10px;
-    margin-top: -10px;
-    padding: 2ex;
-}
-.dragtable-sortable { 
+.dragtable-sortable {
     list-style-type: none; margin: 0; padding: 0; -moz-user-select: none;
 }
 .dragtable-sortable li {
-    margin: 0; padding: 0; float: left; font-size: 1em; background: white; 
+    margin: 0; padding: 0; float: left; font-size: 1em; background: white;
 }
 
 .dragtable-sortable th, .dragtable-sortable td{
@@ -57,22 +47,28 @@ ul.sortable {
 }
 
 .dragtable-sortable li:first-child th, .dragtable-sortable li:first-child td {
-    border-left: 1px solid #CCC; 
+    border-left: 1px solid #CCC;
 }
 
 .ui-sortable-helper {
     opacity: 0.7;filter: alpha(opacity=70);
 }
-.ui-sortable-placeholder { 
+.ui-sortable-placeholder {
     -moz-box-shadow: 4px 5px 4px #C6C6C6 inset;
     -webkit-box-shadow: 4px 5px 4px #C6C6C6 inset;
     box-shadow: 4px 5px 4px #C6C6C6 inset;
     border-bottom: 1px solid #CCCCCC;
     border-top: 1px solid #CCCCCC;
     visibility: visible !important;
-    background: #EFEFEF !important; 
+    background: #EFEFEF !important;
     visibility: visible !important;
 }
-.ui-sortable-placeholder * { 
-    opacity: 0.0; visibility: hidden; 
+.ui-sortable-placeholder * {
+    opacity: 0.0; visibility: hidden;
+}
+.table-expr {
+    width: 90% !important;
+}
+.tab-pane {
+    padding-top: 10px;
 }

@@ -3,15 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <title>HTML Table View</title>
-    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="css/jquery.ui.autocomplete.css" rel="stylesheet">
     <link href="css/styles.css" rel="stylesheet">
+    <link href="css/bootstrap-table.css" rel="stylesheet">
+    <link href="css/tablecloth.css" rel="stylesheet">
 </head>
 <body>
     <div class="container">
         <div class="row-fluid">
-            <div class="span12">
-                <h3>RDBMS Table Explorer - v1.0 <span class="title">( nareshv@ )</span> </h3>
+            <div class="col-md-12">
+                <h3>RDBMS Table Explorer - v1.1 <span class="title">( nareshv@ )</span> </h3>
                 <ul class="nav nav-tabs">
                     <li class="active"><a href="#table-container-1" data-toggle="tab">Employees</a></li>
                     <li><a href="#table-container-2" data-toggle="tab">Organisations</a></li>
@@ -25,27 +28,27 @@
                                 <strong>All keywords : </strong><pre class="table-keywords-all">&nbsp;</pre>
                             </div>
                             <div class="form form-inline">
-                                <div class="form-search" style="margin-bottom: 1ex">
-                                    <input class="table-expr search-query span11" type="text" placeholder="SQL Expression">
-                                    <button class="btn btn-info table-update-btn">Filter</button>
+                                <div class="form" style="margin-bottom: 1ex">
+                                    <input class="table-expr form-control" type="search" placeholder="SQL Expression">&nbsp;
+                                    <button class="btn btn-info table-update-btn"><i class="fa fa-filter"></i>Filter</button>
                                 </div>
-                                <select class="table-choose">
+                                <select class="table-choose form-control">
                                     <option value="employees">Employees</option>
                                 </select>
-                                <select class="table-limit-page input-medium"></select>
-                                <select class="table-limit-size input-mini"></select>
+                                <select class="table-limit-page input-medium form-control"></select>
+                                <select class="table-limit-size input-mini form-control"></select>
                                 <input type="hidden" class="table-columns" placeholder="Columns List">
                                 <span class="table-status label"></span>
                                 <div class="pull-right">
-                                    <a href="config.php" class="btn btn-mini btn-danger table-export"><i class="icon icon-white icon-download">&nbsp;</i></a>
-                                    <button class="btn btn-mini btn-success table-popover" data-toggle="popover" data-original-title="Choose Columns"><i class="icon icon-white icon-list">&nbsp;</i></button>
+                                    <a href="config.php" class="btn btn-mini btn-danger table-export"><i class="fa fa-cloud-download"></i></a>
+                                    <button class="btn btn-mini btn-success table-popover" data-toggle="popover" data-original-title="Choose Columns"><i class="fa fa-list"></i></button>
                                 </div>
                             </div>
                         </div>
                         <div class="table-widget">
                             <span class="table-error alert alert-info hide">&nbsp;</span>
                             <h2 class="table-title"></h2>
-                            <table class="table-view table table-bordered"></table>
+                            <table class="table-view table table-condensed table-bordered"></table>
                         </div>
                     </div>
                     <!-- markup for the table widget -->
@@ -57,19 +60,19 @@
                                 <strong>All keywords : </strong><pre class="table-keywords-all">&nbsp;</pre>
                             </div>
                             <div class="form form-inline">
-                                <div class="form-search" style="margin-bottom: 1ex">
-                                    <input class="table-expr search-query span11" type="text" placeholder="SQL Expression">
-                                    <button class="btn btn-info table-update-btn">Filter</button>
+                                <div class="form-inline" style="margin-bottom: 1ex">
+                                    <input class="table-expr form-control col-md-11" type="search" placeholder="SQL Expression">&nbsp;
+                                    <button class="btn btn-info table-update-btn"><i class="fa fa-filter"></i>Filter</button>
                                 </div>
-                                <select class="table-choose">
+                                <select class="table-choose form-control">
                                     <option value="organisations">Organisations</option>
                                 </select>
-                                <select class="table-limit-page input-medium"></select>
-                                <select class="table-limit-size input-mini"></select>
+                                <select class="table-limit-page input-medium form-control"></select>
+                                <select class="table-limit-size input-sm form-control"></select>
                                 <input type="hidden" class="table-columns" placeholder="Columns List">
                                 <div class="pull-right">
-                                    <a href="config.php" class="btn btn-mini btn-danger table-export"><i class="icon icon-white icon-download">&nbsp;</i></a>
-                                    <button class="btn btn-mini btn-success table-popover" data-toggle="popover" data-original-title="Choose Columns"><i class="icon icon-white icon-list">&nbsp;</i></button>
+                                    <a href="config.php" class="btn btn-mini btn-danger table-export"><i class="fa fa-cloud-download">&nbsp;</i></a>
+                                    <button class="btn btn-mini btn-success table-popover" data-toggle="popover" data-original-title="Choose Columns"><i class="fa fa-list">&nbsp;</i></button>
                                 </div>
                                 <span class="table-status label"></span>
                             </div>
@@ -77,7 +80,7 @@
                         <div class="table-widget">
                             <span class="table-error alert alert-info hide">&nbsp;</span>
                             <h2 class="table-title"></h2>
-                            <table class="table-view table table-bordered"></table>
+                            <table class="table-view table table-condensed table-bordered"></table>
                         </div>
                     </div>
                     <!-- markup for the table widget -->
@@ -87,12 +90,15 @@
     </div>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
     <script src="js/underscore-min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
     <script src="js/jquery-ui.js"></script>
     <script src="js/jquery.dragtable.js"></script>
     <script src="js/jquery.cookie.js"></script>
     <script src="js/jquery.csv.js"></script>
     <script src="js/condition-builder.js"></script>
+    <script src="js/jquery.metadata.js"></script>
+    <script src="js/jquery.tablesorter.min.js"></script>
+    <script src="js/jquery.tablecloth.js"></script>
     <script src="js/jquery.table-view.js"></script>
     <script src="js/runtime.js"></script>
 </body>

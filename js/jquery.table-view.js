@@ -230,6 +230,7 @@ var TableView = function(el, oel, opt) {
                     $(element + ' ' + '.table-keywords-all').text(a.settings.keywords.join(', '));
                     $(element + ' ' + '.table-status').html(a.settings.status);
                     $(oelement + ' ' + '.table-view').html(a.table);
+                    $(oelement + ' ' + '.table-view').tablecloth({theme:"default"});
                     initPopover(element);
                     // initQueryBuilder();
                     handleSorting(element);
