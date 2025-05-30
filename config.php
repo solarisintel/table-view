@@ -41,6 +41,7 @@ if (!empty($_GET['expression'])) {
 
 $db = new SqliteDB('sample.db');
 //$db = new MysqlDB('localhost', 'root', '', 'test');
+//$db = new PgsqlDB('localhost', 'root', '', 'test');
 
 if (!empty($_GET['columns'])) {
     $incolumns = explode(',', $_GET['columns']);
